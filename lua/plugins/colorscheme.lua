@@ -34,6 +34,18 @@ return {
 				color_overrides = {},
 				custom_highlights = function(colors)
 					return {
+						-- Disable cursor line highlighting
+						CursorLine = { bg = "NONE" },
+						CursorLineNr = { fg = colors.lavender, bg = "NONE" },
+
+						-- Disable LSP reference highlighting (word under cursor)
+						LspReferenceText = { bg = "NONE" },
+						LspReferenceRead = { bg = "NONE" },
+						LspReferenceWrite = { bg = "NONE" },
+
+						-- Disable visual selection of matching words
+						MatchParen = { fg = colors.peach, bg = "NONE", bold = true },
+
 						-- Telescope transparency
 						TelescopeNormal = { bg = "NONE" },
 						TelescopeBorder = { bg = "NONE" },
@@ -118,7 +130,21 @@ return {
 					mason = true,
 				},
 			})
+
 			vim.cmd.colorscheme("catppuccin")
+
+			-- Disable cursor line highlighting
+			vim.opt.cursorline = false
+
+			-- Disable LSP document highlight (word under cursor highlighting)
+			vim.api.nvim_create_autocmd("LspAttach", {
+				callback = function(args)
+					local client = vim.lsp.get_client_by_id(args.data.client_id)
+					if client and client.server_capabilities.documentHighlightProvider then
+						client.server_capabilities.documentHighlightProvider = false
+					end
+				end,
+			})
 		end,
 	},
 }

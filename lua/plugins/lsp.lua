@@ -92,7 +92,6 @@ return {
 					},
 				},
 
-				-- ESLint
 				eslint = {},
 
 				-- JSON
@@ -244,7 +243,6 @@ return {
 			},
 
 			setup = {
-				-- Custom setup for Zig
 				zls = function(_, opts)
 					vim.g.zig_fmt_parse_errors = 0
 					vim.g.zig_fmt_autosave = 0
@@ -253,10 +251,8 @@ return {
 		},
 
 		config = function(_, opts)
-			-- Setup diagnostics
 			vim.diagnostic.config(opts.diagnostics)
 
-			-- Custom floating definition preview function
 			local function open_window_for_definition()
 				local params = vim.lsp.util.make_position_params()
 				vim.lsp.buf_request(0, "textDocument/definition", params, function(_, result)
@@ -283,21 +279,18 @@ return {
 				end)
 			end
 
-			-- Custom LSP keymaps
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(ev)
 					local bufnr = ev.buf
 					local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
-					-- Enable omnifunc
 					vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
 					local function map(mode, lhs, rhs, desc)
 						vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true, noremap = true })
 					end
 
-					-- Custom keymaps
 					map("n", "gd", open_window_for_definition, "LSP: Floating definition preview")
 					map("n", "<leader>gd", vim.lsp.buf.definition, "LSP: Go to definition")
 					map("n", "K", vim.lsp.buf.hover, "LSP: Hover documentation")
