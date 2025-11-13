@@ -1,5 +1,4 @@
 return {
-	-- Harpoon - Quick file navigation
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
@@ -12,35 +11,37 @@ return {
 			vim.keymap.set("n", "<leader>a", function()
 				harpoon:list():add()
 			end, { desc = "Harpoon: Add file" })
+
 			vim.keymap.set("n", "<C-p>", function()
 				harpoon.ui:toggle_quick_menu(harpoon:list())
 			end, { desc = "Harpoon: Toggle menu" })
 
 			-- Navigate to files
-			vim.keymap.set("n", "<C-h>", function()
+			vim.keymap.set("n", "<leader>1", function()
 				harpoon:list():select(1)
 			end, { desc = "Harpoon: File 1" })
-			vim.keymap.set("n", "<C-t>", function()
+
+			vim.keymap.set("n", "<leader>2", function()
 				harpoon:list():select(2)
 			end, { desc = "Harpoon: File 2" })
-			vim.keymap.set("n", "<C-n>", function()
+
+			vim.keymap.set("n", "<leader>3", function()
 				harpoon:list():select(3)
 			end, { desc = "Harpoon: File 3" })
-			vim.keymap.set("n", "<C-s>", function()
+
+			vim.keymap.set("n", "<leader>4", function()
 				harpoon:list():select(4)
 			end, { desc = "Harpoon: File 4" })
 
-			-- Toggle previous & next buffers stored within Harpoon list
-			vim.keymap.set("n", "<C-S-P>", function()
+			vim.keymap.set("n", "<C-P>", function()
 				harpoon:list():prev()
 			end, { desc = "Harpoon: Previous" })
-			vim.keymap.set("n", "<C-S-N>", function()
+
+			vim.keymap.set("n", "<C-N>", function()
 				harpoon:list():next()
 			end, { desc = "Harpoon: Next" })
 		end,
 	},
-
-	-- vim-apm - Actions Per Minute tracker
 	{
 		"ThePrimeagen/vim-apm",
 		event = "VeryLazy",
@@ -54,7 +55,6 @@ return {
 			end, { desc = "Show APM" })
 		end,
 	},
-
 	-- vim-with-me - Collaborative editing (experimental)
 	{
 		"ThePrimeagen/vim-with-me",
@@ -63,7 +63,6 @@ return {
 			-- Auto-configured on load
 		end,
 	},
-
 	-- Refactoring library
 	{
 		"ThePrimeagen/refactoring.nvim",
@@ -74,7 +73,6 @@ return {
 		config = function()
 			require("refactoring").setup()
 
-			-- Keymaps for refactoring
 			vim.keymap.set("x", "<leader>re", ":Refactor extract ", { desc = "Extract function" })
 			vim.keymap.set("x", "<leader>rf", ":Refactor extract_to_file ", { desc = "Extract to file" })
 			vim.keymap.set("x", "<leader>rv", ":Refactor extract_var ", { desc = "Extract variable" })

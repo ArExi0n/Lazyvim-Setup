@@ -1,7 +1,6 @@
 return {
-	-- Hihglight colors
 	{
-		"mini-hipatterns/mini.hipatterns",
+		"echasnovski/mini.hipatterns",
 		event = "BufReadPre",
 		opts = {},
 	},
