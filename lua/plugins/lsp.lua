@@ -4,6 +4,7 @@ return {
 		opts = function(_, opts)
 			opts.ensure_installed = opts.ensure_installed or {}
 			vim.list_extend(opts.ensure_installed, {
+				-- Language Servers
 				"typescript-language-server",
 				"eslint-lsp",
 				"lua-language-server",
@@ -14,29 +15,38 @@ return {
 				"gopls",
 				"css-lsp",
 				"html-lsp",
+				-- Linters
 				"luacheck",
 				"shellcheck",
+				-- Formatters
 				"shfmt",
 				"stylua",
+				"prettier",
 			})
 		end,
 	},
 
-	-- LSP Configuration
+	-- LSP Configuration with auto-setup
 	{
 		"neovim/nvim-lspconfig",
+		event = { "BufReadPre", "BufNewFile" },
 		dependencies = {
 			"mason.nvim",
 			"mason-org/mason-lspconfig.nvim",
+			"williamboman/mason-lspconfig.nvim",
 		},
 		opts = {
+			-- Automatically start LSP servers
+			autostart = true,
+
 			inlay_hints = { enabled = true },
 
 			diagnostics = {
 				underline = true,
 				update_in_insert = false,
 				virtual_text = {
-					spacing = 2,
+					spacing = 4,
+					source = "if_many",
 					prefix = "●",
 				},
 				severity_sort = true,
@@ -58,21 +68,26 @@ return {
 				},
 			},
 
-			-- LSP Server configurations
 			servers = {
 				-- TypeScript/JavaScript
 				ts_ls = {
+					autostart = true,
 					root_dir = function(...)
-						return require("lspconfig.util").root_pattern(".git")(...)
+						return require("lspconfig.util").root_pattern(
+							"package.json",
+							"tsconfig.json",
+							"jsconfig.json",
+							".git"
+						)(...)
 					end,
-					single_file_support = false,
+					single_file_support = true,
 					settings = {
 						typescript = {
 							inlayHints = {
 								includeInlayParameterNameHints = "literal",
 								includeInlayParameterNameHintsWhenArgumentMatchesName = false,
 								includeInlayFunctionParameterTypeHints = true,
-								includeInlayVariableTypeHints = false,
+								includeInlayVariableTypeHints = true,
 								includeInlayPropertyDeclarationTypeHints = true,
 								includeInlayFunctionLikeReturnTypeHints = true,
 								includeInlayEnumMemberValueHints = true,
@@ -92,24 +107,39 @@ return {
 					},
 				},
 
-				eslint = {},
+				eslint = {
+					autostart = true,
+					settings = {
+						workingDirectories = { mode = "auto" },
+					},
+				},
 
-				-- JSON
-				jsonls = {},
+				jsonls = {
+					autostart = true,
+				},
 
-				-- Bash
-				bashls = {},
+				bashls = {
+					autostart = true,
+				},
 
-				-- CSS Language Server
-				cssls = {},
+				cssls = {
+					autostart = true,
+				},
 
-				-- HTML Language Server
-				html = {},
+				html = {
+					autostart = true,
+				},
 
-				-- Tailwind CSS
 				tailwindcss = {
+					autostart = true,
 					root_dir = function(...)
-						return require("lspconfig.util").root_pattern(".git")(...)
+						return require("lspconfig.util").root_pattern(
+							"tailwind.config.js",
+							"tailwind.config.ts",
+							"postcss.config.js",
+							"postcss.config.ts",
+							".git"
+						)(...)
 					end,
 					filetypes = {
 						"html",
@@ -121,26 +151,12 @@ return {
 						"typescriptreact",
 						"vue",
 						"svelte",
-						"heex",
 					},
 				},
 
-				-- Lua Language Server
 				lua_ls = {
+					autostart = true,
 					single_file_support = true,
-					root_dir = function(fname)
-						local root_files = {
-							".luarc.json",
-							".luarc.jsonc",
-							".luacheckrc",
-							".stylua.toml",
-							"stylua.toml",
-							"selene.toml",
-							"selene.yml",
-							".git",
-						}
-						return require("lspconfig.util").root_pattern(unpack(root_files))(fname)
-					end,
 					settings = {
 						Lua = {
 							workspace = {
@@ -150,9 +166,6 @@ return {
 								workspaceWord = true,
 								callSnippet = "Both",
 							},
-							misc = {
-								parameters = {},
-							},
 							hint = {
 								enable = true,
 								setType = false,
@@ -161,98 +174,65 @@ return {
 								semicolon = "Disable",
 								arrayIndex = "Disable",
 							},
-							doc = {
-								privateName = { "^_" },
-							},
-							type = {
-								castNumberToInteger = true,
-							},
 							diagnostics = {
 								disable = { "incomplete-signature-doc", "trailing-space" },
-								groupSeverity = {
-									strong = "Warning",
-									strict = "Warning",
-								},
-								groupFileStatus = {
-									["ambiguity"] = "Opened",
-									["await"] = "Opened",
-									["codestyle"] = "None",
-									["duplicate"] = "Opened",
-									["global"] = "Opened",
-									["luadoc"] = "Opened",
-									["redefined"] = "Opened",
-									["strict"] = "Opened",
-									["strong"] = "Opened",
-									["type-check"] = "Opened",
-									["unbalanced"] = "Opened",
-									["unused"] = "Opened",
-								},
-								unusedLocalExclude = { "_*" },
-							},
-							format = {
-								enable = true,
-								defaultConfig = {
-									indent_style = "space",
-									indent_size = "2",
-									continuation_indent_size = "2",
-								},
+								globals = { "vim" },
 							},
 						},
 					},
 				},
 
-				-- Rust Analyzer
 				rust_analyzer = {
+					autostart = true,
 					settings = {
 						["rust-analyzer"] = {
 							cargo = {
 								allFeatures = true,
+								loadOutDirsFromCheck = true,
 							},
 							checkOnSave = {
 								command = "clippy",
+								allFeatures = true,
+							},
+							procMacro = {
+								enable = true,
 							},
 						},
 					},
 				},
 
-				-- Go Language Server
 				gopls = {
+					autostart = true,
 					settings = {
 						gopls = {
 							analyses = {
 								unusedparams = true,
 							},
 							staticcheck = true,
+							gofumpt = true,
 						},
 					},
 				},
 
-				-- Zig Language Server
 				zls = {
-					root_dir = function(fname)
-						return require("lspconfig.util").root_pattern(".git", "build.zig", "zls.json")(fname)
-					end,
-					settings = {
-						zls = {
-							enable_inlay_hints = true,
-							enable_snippets = true,
-							warn_style = true,
-						},
-					},
+					autostart = true,
 				},
 			},
 
-			setup = {
-				zls = function(_, opts)
-					vim.g.zig_fmt_parse_errors = 0
-					vim.g.zig_fmt_autosave = 0
-				end,
-			},
+			setup = {},
 		},
 
 		config = function(_, opts)
-			vim.diagnostic.config(opts.diagnostics)
+			-- Configure diagnostics globally
+			vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
+			-- Auto-install LSP servers via mason-lspconfig
+			require("mason-lspconfig").setup({
+				ensure_installed = vim.tbl_keys(opts.servers),
+				automatic_installation = true,
+			})
+
+			-- Floating definition preview function
 			local function open_window_for_definition()
 				local params = vim.lsp.util.make_position_params()
 				vim.lsp.buf_request(0, "textDocument/definition", params, function(_, result)
@@ -270,7 +250,7 @@ return {
 					local lines =
 						vim.api.nvim_buf_get_lines(bufnr, loc.range.start.line, loc.range["end"].line + 1, false)
 					local content = table.concat(lines, "\n")
-					vim.lsp.util.open_floating_preview(vim.split(content, "\n"), "rust", {
+					vim.lsp.util.open_floating_preview(vim.split(content, "\n"), "typescript", {
 						border = "rounded",
 						focusable = true,
 						max_width = 80,
@@ -279,20 +259,31 @@ return {
 				end)
 			end
 
+			-- LSP Attach autocmd for keymaps
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(ev)
 					local bufnr = ev.buf
 					local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
+					-- Enable omnifunc completion
 					vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
 					local function map(mode, lhs, rhs, desc)
-						vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc, silent = true, noremap = true })
+						vim.keymap.set(mode, lhs, rhs, {
+							buffer = bufnr,
+							desc = desc,
+							silent = true,
+							noremap = true,
+						})
 					end
 
+					-- LSP keymaps
 					map("n", "gd", open_window_for_definition, "LSP: Floating definition preview")
 					map("n", "<leader>gd", vim.lsp.buf.definition, "LSP: Go to definition")
+					map("n", "gD", vim.lsp.buf.declaration, "LSP: Go to declaration")
+					map("n", "gi", vim.lsp.buf.implementation, "LSP: Go to implementation")
+					map("n", "gr", vim.lsp.buf.references, "LSP: References")
 					map("n", "K", vim.lsp.buf.hover, "LSP: Hover documentation")
 					map("n", "<leader>vws", vim.lsp.buf.workspace_symbol, "LSP: Workspace symbol")
 					map("n", "<leader>vd", function()
@@ -307,46 +298,107 @@ return {
 					map("n", "<leader>f", function()
 						vim.lsp.buf.format({ async = true })
 					end, "LSP: Format")
+
+					-- Refresh diagnostics on save
+					vim.api.nvim_create_autocmd("BufWritePost", {
+						buffer = bufnr,
+						callback = function()
+							vim.diagnostic.show(nil, bufnr)
+						end,
+					})
+
+					-- Show diagnostics on CursorHold
+					vim.api.nvim_create_autocmd("CursorHold", {
+						buffer = bufnr,
+						callback = function()
+							vim.diagnostic.open_float(nil, {
+								focusable = false,
+								close_events = { "BufLeave", "CursorMoved", "InsertEnter" },
+								border = "rounded",
+								source = "always",
+								prefix = " ",
+								scope = "cursor",
+							})
+						end,
+					})
 				end,
 			})
 
-			-- Setup servers
+			-- Setup all servers
 			local lspconfig = require("lspconfig")
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-			for server, server_opts in pairs(opts.servers) do
-				server_opts.capabilities =
-					vim.tbl_deep_extend("force", {}, capabilities, server_opts.capabilities or {})
+			-- Enhanced capabilities
+			capabilities.textDocument.completion.completionItem.snippetSupport = true
+			capabilities.textDocument.completion.completionItem.resolveSupport = {
+				properties = {
+					"documentation",
+					"detail",
+					"additionalTextEdits",
+				},
+			}
 
-				if opts.setup[server] then
-					if opts.setup[server](server, server_opts) then
-						return
+			-- Setup mason-lspconfig handlers
+			require("mason-lspconfig").setup_handlers({
+				-- Default handler
+				function(server_name)
+					local server_opts = opts.servers[server_name] or {}
+					server_opts.capabilities =
+						vim.tbl_deep_extend("force", {}, capabilities, server_opts.capabilities or {})
+
+					if opts.setup[server_name] then
+						if opts.setup[server_name](server_name, server_opts) then
+							return
+						end
 					end
-				end
 
-				lspconfig[server].setup(server_opts)
-			end
+					lspconfig[server_name].setup(server_opts)
+				end,
+			})
 
-			-- Apply Catppuccin theme colors if available
+			-- Apply Catppuccin theme colors
 			vim.schedule(function()
 				local has_catppuccin, catppuccin = pcall(require, "catppuccin.palettes")
 				if has_catppuccin then
 					local palette = catppuccin.get_palette("frappe")
 
-					vim.api.nvim_set_hl(0, "CmpItemKindCopilot", { fg = palette.teal })
-					vim.api.nvim_set_hl(0, "NormalFloat", { bg = palette.base, fg = palette.text })
-					vim.api.nvim_set_hl(0, "FloatBorder", { fg = palette.blue, bg = palette.base })
-					vim.api.nvim_set_hl(0, "Pmenu", { bg = palette.base, fg = palette.text })
-					vim.api.nvim_set_hl(0, "PmenuSel", { bg = palette.surface1, fg = palette.text })
-					vim.api.nvim_set_hl(0, "PmenuBorder", { fg = palette.blue, bg = palette.base })
-					vim.api.nvim_set_hl(0, "CmpItemAbbr", { fg = palette.text })
-					vim.api.nvim_set_hl(0, "CmpItemKind", { fg = palette.blue })
+					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextError", { fg = palette.red, bg = "NONE" })
+					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { fg = palette.yellow, bg = "NONE" })
+					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextInfo", { fg = palette.blue, bg = "NONE" })
+					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextHint", { fg = palette.teal, bg = "NONE" })
 				end
 			end)
 		end,
 	},
 
-	-- Autocompletion
+	-- Linting
+	{
+		"mfussenegger/nvim-lint",
+		event = { "BufReadPre", "BufNewFile" },
+		config = function()
+			local lint = require("lint")
+
+			lint.linters_by_ft = {
+				javascript = { "eslint" },
+				typescript = { "eslint" },
+				javascriptreact = { "eslint" },
+				typescriptreact = { "eslint" },
+				lua = { "luacheck" },
+				sh = { "shellcheck" },
+			}
+
+			local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+
+			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+				group = lint_augroup,
+				callback = function()
+					lint.try_lint()
+				end,
+			})
+		end,
+	},
+
+	-- Autocompletion (your existing config)
 	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
@@ -369,7 +421,6 @@ return {
 			local cmp = require("cmp")
 			local has_copilot_cmp = pcall(require, "copilot_cmp")
 
-			-- Custom formatting with icons
 			opts.formatting = {
 				format = function(entry, vim_item)
 					local kind_icons = {
@@ -415,13 +466,11 @@ return {
 				end,
 			}
 
-			-- Window configuration
 			opts.window = {
 				completion = cmp.config.window.bordered(),
 				documentation = cmp.config.window.bordered(),
 			}
 
-			-- Update sources with priorities
 			opts.sources = cmp.config.sources({
 				{ name = "copilot", group_index = 1, priority = 1000 },
 				{ name = "nvim_lsp", group_index = 2, priority = 900 },
@@ -432,7 +481,6 @@ return {
 				{ name = "emoji", group_index = 3, priority = 100 },
 			})
 
-			-- Custom sorting with Copilot prioritization
 			opts.sorting = {
 				priority_weight = 2,
 				comparators = {
@@ -449,7 +497,6 @@ return {
 				},
 			}
 
-			-- Update mappings
 			opts.mapping = vim.tbl_extend("force", opts.mapping or {}, {
 				["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
 				["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
@@ -488,6 +535,12 @@ return {
 	-- LSP progress UI
 	{
 		"j-hui/fidget.nvim",
-		opts = {},
+		opts = {
+			notification = {
+				window = {
+					winblend = 0,
+				},
+			},
+		},
 	},
 }
