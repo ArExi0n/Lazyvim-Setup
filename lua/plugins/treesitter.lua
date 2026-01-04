@@ -2,10 +2,18 @@ return {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
+		highlight = {
+			enable = true,
+		},
+		indent = {
+			enable = true,
+			disable = { "yaml" },
+		},
 		opts = {
 			ensure_installed = {
 				"javascript",
 				"typescript",
+				"tsx",
 				"css",
 				"gitignore",
 				"graphql",
@@ -17,6 +25,13 @@ return {
 				"sql",
 				"vim",
 				"lua",
+				"html",
+				"markdown",
+				"markdown_inline",
+				"bash",
+				"c",
+				"go",
+				"python",
 			},
 			query_linter = {
 				enable = true,
