@@ -12,6 +12,7 @@ return {
 				"http",
 				"json",
 				"scss",
+				"swift",
 				"rust",
 				"sql",
 				"vim",
