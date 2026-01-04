@@ -25,10 +25,7 @@
       "Lua": {
         "workspace": {
           "checkThirdParty": false,
-          "library": [
-            "${3rd}/luv/library",
-            "${3rd}/busted/library"
-          ]
+          "library": ["${3rd}/luv/library", "${3rd}/busted/library"]
         },
         "telemetry": {
           "enable": false

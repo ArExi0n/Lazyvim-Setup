@@ -158,7 +158,6 @@ return {
 				vim.tbl_extend("force", opts, { desc = "Xcode: Toggle Coverage Display" })
 			)
 
-			-- Quickfix & Diagnostics
 			vim.keymap.set(
 				"n",
 				"<leader>xf",
