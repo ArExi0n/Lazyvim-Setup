@@ -32,7 +32,7 @@ return {
 				desc = "Find files",
 			},
 			{
-				"<C-s>",
+				"<C-S>",
 				function()
 					require("telescope.builtin").git_files()
 				end,

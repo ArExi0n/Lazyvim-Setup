@@ -17,7 +17,7 @@
       "signs": true,
       "underline": true,
       "update_in_insert": false,
-      "severity_sort": false
+      "severity_sort": true
     }
   },
   "servers": {
@@ -32,61 +32,69 @@
         },
         "runtime": {
           "version": "LuaJIT"
+        },
+        "diagnostics": {
+          "globals": ["vim"]
         }
       }
     },
-    "stylua": {
+    "ts_ls": {
+      "enabled": true,
+      "typescript": {
+        "preferences": {
+          "quotePreference": "single",
+          "importModuleSpecifierPreference": "relative"
+        },
+        "inlayHints": {
+          "includeInlayParameterNameHints": "all",
+          "includeInlayParameterNameHintsWhenArgumentMatchesName": false,
+          "includeInlayFunctionParameterTypeHints": true,
+          "includeInlayVariableTypeHints": true,
+          "includeInlayPropertyDeclarationTypeHints": true,
+          "includeInlayFunctionLikeReturnTypeHints": true,
+          "includeInlayEnumMemberValueHints": true
+        }
+      }
+    },
+    "sourcekit": {
+      "enabled": true,
+      "cmd": ["sourcekit-lsp"],
+      "filetypes": ["swift", "objective-c", "objective-cpp"],
+      "root_dir": ["Package.swift", "*.xcodeproj", "*.xcworkspace", ".git"]
+    },
+    "eslint": {
+      "enabled": true,
+      "workingDirectories": {
+        "mode": "auto"
+      }
+    },
+    "jsonls": {
+      "enabled": true,
+      "json": {
+        "validate": {
+          "enable": true
+        },
+        "format": {
+          "enable": true
+        }
+      }
+    },
+    "html": {
       "enabled": true
     },
-    "pylsp": {
-      "enabled": true,
-      "plugins": {
-        "pycodestyle": {
-          "enabled": false
-        },
-        "pyflakes": {
-          "enabled": true
-        },
-        "mccabe": {
-          "enabled": false
-        },
-        "pylint": {
-          "enabled": false
-        }
-      }
+    "cssls": {
+      "enabled": true
     },
-    "pyright": {
-      "enabled": true,
-      "python": {
-        "analysis": {
-          "typeCheckingMode": "basic",
-          "diagnosticMode": "workspace"
-        }
-      }
+    "tailwindcss": {
+      "enabled": true
     },
     "rust_analyzer": {
       "enabled": true,
       "checkOnSave": {
         "command": "clippy"
-      }
-    },
-    "tsserver": {
-      "enabled": true,
-      "typescript": {
-        "preferences": {
-          "quotePreference": "single"
-        }
-      }
-    },
-    "clangd": {
-      "enabled": true,
-      "clangd": {
-        "arguments": [
-          "--header-insertion=iwyu",
-          "--completion-style=bundled",
-          "-j=4",
-          "--pch-storage=memory"
-        ]
+      },
+      "cargo": {
+        "allFeatures": true
       }
     },
     "gopls": {
@@ -94,22 +102,25 @@
       "settings": {
         "gopls": {
           "gofumpt": true,
-          "usePlaceholders": true
+          "usePlaceholders": true,
+          "analyses": {
+            "unusedparams": true
+          },
+          "staticcheck": true
         }
       }
+    },
+    "bashls": {
+      "enabled": true
     }
   },
   "formatting": {
     "enable": true,
     "format_on_save": true,
-    "timeout_ms": 5000
+    "timeout_ms": 1000
   },
   "completion": {
     "autocomplete": true,
     "show_documentation": true
-  },
-  "development": {
-    "debug": false,
-    "logLevel": "warn"
   }
 }
