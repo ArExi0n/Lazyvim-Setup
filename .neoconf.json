@@ -1,0 +1,118 @@
+{
+  "neodev": {
+    "enable": true,
+    "library": {
+      "enabled": true,
+      "plugins": true
+    }
+  },
+  "lsp": {
+    "enable": true,
+    "autostart": true,
+    "diagnostics": {
+      "virtual_text": {
+        "prefix": "●",
+        "spacing": 4
+      },
+      "signs": true,
+      "underline": true,
+      "update_in_insert": false,
+      "severity_sort": false
+    }
+  },
+  "servers": {
+    "lua_ls": {
+      "Lua": {
+        "workspace": {
+          "checkThirdParty": false,
+          "library": [
+            "${3rd}/luv/library",
+            "${3rd}/busted/library"
+          ]
+        },
+        "telemetry": {
+          "enable": false
+        },
+        "runtime": {
+          "version": "LuaJIT"
+        }
+      }
+    },
+    "stylua": {
+      "enabled": true
+    },
+    "pylsp": {
+      "enabled": true,
+      "plugins": {
+        "pycodestyle": {
+          "enabled": false
+        },
+        "pyflakes": {
+          "enabled": true
+        },
+        "mccabe": {
+          "enabled": false
+        },
+        "pylint": {
+          "enabled": false
+        }
+      }
+    },
+    "pyright": {
+      "enabled": true,
+      "python": {
+        "analysis": {
+          "typeCheckingMode": "basic",
+          "diagnosticMode": "workspace"
+        }
+      }
+    },
+    "rust_analyzer": {
+      "enabled": true,
+      "checkOnSave": {
+        "command": "clippy"
+      }
+    },
+    "tsserver": {
+      "enabled": true,
+      "typescript": {
+        "preferences": {
+          "quotePreference": "single"
+        }
+      }
+    },
+    "clangd": {
+      "enabled": true,
+      "clangd": {
+        "arguments": [
+          "--header-insertion=iwyu",
+          "--completion-style=bundled",
+          "-j=4",
+          "--pch-storage=memory"
+        ]
+      }
+    },
+    "gopls": {
+      "enabled": true,
+      "settings": {
+        "gopls": {
+          "gofumpt": true,
+          "usePlaceholders": true
+        }
+      }
+    }
+  },
+  "formatting": {
+    "enable": true,
+    "format_on_save": true,
+    "timeout_ms": 5000
+  },
+  "completion": {
+    "autocomplete": true,
+    "show_documentation": true
+  },
+  "development": {
+    "debug": false,
+    "logLevel": "warn"
+  }
+}
