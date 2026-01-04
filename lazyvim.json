@@ -1,10 +1,83 @@
 {
-  "extras": [
-
-  ],
-  "news": {
-    "NEWS.md": "11866",
-    "doc/news.txt": "25127"
+  "spec": {
+    "ArExi0n/lazy.nvim": { "branch": "main" }
   },
-  "version": 8
+  "ios_development": {
+    "enabled": true,
+    "description": "Swift iOS Development Configuration"
+  },
+  "plugins": [
+    {
+      "name": "nvim-lspconfig",
+      "config": {
+        "sourcekit_lsp": {
+          "enabled": true,
+          "filetypes": ["swift"],
+          "init_options": {
+            "sourceKitServerPath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"
+          }
+        }
+      }
+    },
+    {
+      "name": "nvim-treesitter",
+      "config": {
+        "ensure_installed": ["swift", "xcconfig", "json", "lua", "vim", "markdown"],
+        "highlight": { "enable": true }
+      }
+    },
+    {
+      "name": "mason.nvim",
+      "config": {
+        "ensure_installed": ["sourcekit-lsp", "swiftformat", "swiftlint"]
+      }
+    },
+    {
+      "name": "conform.nvim",
+      "config": {
+        "formatters": {
+          "swift": {
+            "command": "swiftformat",
+            "args": { "--stdinfiletype", "swift" }
+          }
+        },
+        "formatters_by_ft": {
+          "swift": ["swiftformat"]
+        }
+      }
+    },
+    {
+      "name": "nvim-lint",
+      "config": {
+        "linters_by_ft": {
+          "swift": ["swiftlint"]
+        },
+        "linters": {
+          "swiftlint": {
+            "cmd": "swiftlint lint --use-stdin"
+          }
+        }
+      }
+    }
+  ],
+  "keymaps": {
+    "build": "<leader>sb",
+    "test": "<leader>st",
+    "run": "<leader>sr",
+    "format": "<leader>sf",
+    "lint": "<leader>sl"
+  },
+  "swift_settings": {
+    "target": "iOS",
+    "minimum_deployment_target": "14.0",
+    "swift_version": "5.9",
+    "enable_code_completion": true,
+    "enable_diagnostics": true,
+    "enable_inlay_hints": true
+  },
+  "xcode_integration": {
+    "enabled": true,
+    "auto_detect_schemes": true,
+    "build_configuration": "Debug"
+  }
 }
