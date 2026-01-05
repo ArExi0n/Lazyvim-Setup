@@ -2,9 +2,10 @@ if vim.loader then
 	vim.loader.enable()
 end
 
+local _print = vim.print
+
 _G.dd = function(...)
-	vim.print(...)
+	_print(...)
 end
-vim.print = _G.dd
 
 require("config.lazy")

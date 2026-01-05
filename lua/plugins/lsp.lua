@@ -16,7 +16,7 @@ return {
 
 			return {
 				completion = {
-					completeopt = "menu,menuone,noinsert", -- Auto-select first item like VSCode
+					completeopt = "menu,menuone,noinsert",
 				},
 				snippet = {
 					expand = function(args)
@@ -32,7 +32,6 @@ return {
 					}),
 				},
 				mapping = cmp.mapping.preset.insert({
-					-- Tab to accept completion (like VSCode)
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() then
 							cmp.confirm({ select = true })
@@ -42,8 +41,6 @@ return {
 							fallback()
 						end
 					end, { "i", "s" }),
-
-					-- Shift-Tab to jump backwards in snippets
 					["<S-Tab>"] = cmp.mapping(function(fallback)
 						if luasnip.jumpable(-1) then
 							luasnip.jump(-1)
@@ -51,23 +48,13 @@ return {
 							fallback()
 						end
 					end, { "i", "s" }),
-
-					-- Ctrl-Space to manually trigger completion
 					["<C-CR>"] = cmp.mapping.complete(),
-
-					-- Navigate completion menu
 					["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
 					["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-
-					-- Scroll documentation
 					["<C-b>"] = cmp.mapping.scroll_docs(-4),
 					["<C-f>"] = cmp.mapping.scroll_docs(4),
-
-					-- Close completion menu
 					["<C-e>"] = cmp.mapping.abort(),
-
-					-- Enter to confirm
-					["<CR>"] = cmp.mapping.confirm({ select = false }), -- Only confirm if explicitly selected
+					["<CR>"] = cmp.mapping.confirm({ select = false }),
 				}),
 				sources = cmp.config.sources({
 					{ name = "nvim_lsp", priority = 1000 },
@@ -78,7 +65,6 @@ return {
 				}),
 				formatting = {
 					format = function(entry, vim_item)
-						-- Kind icons
 						local kind_icons = {
 							Text = "󰉿",
 							Method = "󰆧",
@@ -106,18 +92,13 @@ return {
 							Operator = "󰆕",
 							TypeParameter = "",
 						}
-
-						-- Set icon
 						vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind] or "", vim_item.kind)
-
-						-- Set source name
 						vim_item.menu = ({
 							nvim_lsp = "[LSP]",
 							luasnip = "[Snippet]",
 							buffer = "[Buffer]",
 							path = "[Path]",
 						})[entry.source.name]
-
 						return vim_item
 					end,
 				},
@@ -146,7 +127,6 @@ return {
 			local cmp = require("cmp")
 			cmp.setup(opts)
 
-			-- Set up cmdline completion
 			cmp.setup.cmdline("/", {
 				mapping = cmp.mapping.preset.cmdline(),
 				sources = {
@@ -165,7 +145,6 @@ return {
 		end,
 	},
 
-	-- Snippets
 	{
 		"L3MON4D3/LuaSnip",
 		version = "v2.*",
@@ -201,19 +180,15 @@ return {
 				"html-lsp",
 				"swiftformat",
 				"swiftlint",
-				-- Linters
 				"luacheck",
 				"shellcheck",
-				-- Formatters
 				"shfmt",
-				"swiftformat",
 				"stylua",
 				"prettier",
 			})
 		end,
 	},
 
-	-- LSP Configuration with auto-setup
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPre", "BufNewFile" },
@@ -222,11 +197,8 @@ return {
 			"mason-org/mason-lspconfig.nvim",
 		},
 		opts = {
-			-- Automatically start LSP servers
 			autostart = true,
-
 			inlay_hints = { enabled = true },
-
 			diagnostics = {
 				underline = true,
 				update_in_insert = false,
@@ -255,7 +227,6 @@ return {
 			},
 
 			servers = {
-				-- TypeScript/JavaScript
 				ts_ls = {
 					autostart = true,
 					root_dir = function(...)
@@ -293,33 +264,22 @@ return {
 					},
 				},
 
-				sourcekit = function()
-					require("lspconfig").sourcekit.setup({
-						cmd = { "sourcekit-lsp" },
-						filetypes = { "swift", "objc", "objcpp" },
-						root_dir = function(filename)
-							local util = require("lspconfig.util")
-							return util.root_pattern(
-								"Package.swift",
-								".git",
-								"*.xcodeproj",
-								"*.xcworkspace"
-							)(filename)
-						end,
-						capabilities = require("cmp_nvim_lsp").default_capabilities(),
-						on_attach = function(client, bufnr)
-							-- Swift-specific settings
-							vim.bo[bufnr].tabstop = 4
-							vim.bo[bufnr].shiftwidth = 4
-							vim.bo[bufnr].expandtab = true
-						end,
-					})
-					return true
-				end,
-			},
+				sourcekit = {
+					cmd = { "sourcekit-lsp" },
+					filetypes = { "swift", "objc", "objcpp" },
+					root_dir = function(filename)
+						local util = require("lspconfig.util")
+						return util.root_pattern("Package.swift", ".git", "*.xcodeproj", "*.xcworkspace")(filename)
+					end,
+					on_attach = function(client, bufnr)
+						vim.bo[bufnr].tabstop = 4
+						vim.bo[bufnr].shiftwidth = 4
+						vim.bo[bufnr].expandtab = true
+					end,
+				},
 
-      eslint = {
-				autostart = true,
+				eslint = {
+					autostart = true,
 					settings = {
 						workingDirectories = { mode = "auto" },
 					},
@@ -447,22 +407,29 @@ return {
 			end
 
 			require("mason-lspconfig").setup({
-				ensure_installed = vim.tbl_keys(opts.servers),
+				ensure_installed = ensure_installed,
 				automatic_installation = true,
 			})
 
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			capabilities.textDocument.completion.completionItem.snippetSupport = true
 
+			-- Setup mason-lspconfig handlers
 			require("mason-lspconfig").setup_handlers({
 				function(server_name)
 					local server_opts = opts.servers[server_name] or {}
-					server_opts.capabilities = vim.tbl_deep_extend(
-						"force", {}, capabilities, server_opts.capabilities or {}
-					)
+					server_opts.capabilities =
+						vim.tbl_deep_extend("force", {}, capabilities, server_opts.capabilities or {})
 					require("lspconfig")[server_name].setup(server_opts)
 				end,
 			})
+
+			-- FIXED: Setup sourcekit manually since it's not in Mason
+			local lspconfig = require("lspconfig")
+			local sourcekit_opts = opts.servers.sourcekit or {}
+			sourcekit_opts.capabilities =
+				vim.tbl_deep_extend("force", {}, capabilities, sourcekit_opts.capabilities or {})
+			lspconfig.sourcekit.setup(sourcekit_opts)
 
 			if opts.setup then
 				for server_name, setup_fn in pairs(opts.setup) do
@@ -472,7 +439,6 @@ return {
 				end
 			end
 
-			-- Floating definition preview function
 			local function open_window_for_definition()
 				local params = vim.lsp.util.make_position_params()
 				vim.lsp.buf_request(0, "textDocument/definition", params, function(_, result)
@@ -499,14 +465,12 @@ return {
 				end)
 			end
 
-			-- LSP Attach autocmd for keymaps
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(ev)
 					local bufnr = ev.buf
 					local client = vim.lsp.get_client_by_id(ev.data.client_id)
 
-					-- Enable omnifunc completion
 					vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
 					local function map(mode, lhs, rhs, desc)
@@ -518,7 +482,6 @@ return {
 						})
 					end
 
-					-- LSP keymaps
 					map("n", "gd", open_window_for_definition, "LSP: Floating definition preview")
 					map("n", "<leader>gd", vim.lsp.buf.definition, "LSP: Go to definition")
 					map("n", "gD", vim.lsp.buf.declaration, "LSP: Go to declaration")
@@ -539,7 +502,6 @@ return {
 						vim.lsp.buf.format({ async = true })
 					end, "LSP: Format")
 
-					-- Refresh diagnostics on save
 					vim.api.nvim_create_autocmd("BufWritePost", {
 						buffer = bufnr,
 						callback = function()
@@ -547,7 +509,6 @@ return {
 						end,
 					})
 
-					-- Show diagnostics on CursorHold
 					vim.api.nvim_create_autocmd("CursorHold", {
 						buffer = bufnr,
 						callback = function()
@@ -564,44 +525,10 @@ return {
 				end,
 			})
 
-			-- Setup all servers
-			local lspconfig = require("lspconfig")
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-			-- Enhanced capabilities
-			capabilities.textDocument.completion.completionItem.snippetSupport = true
-			capabilities.textDocument.completion.completionItem.resolveSupport = {
-				properties = {
-					"documentation",
-					"detail",
-					"additionalTextEdits",
-				},
-			}
-
-			-- Setup mason-lspconfig handlers
-			require("mason-lspconfig").setup_handlers({
-				-- Default handler
-				function(server_name)
-					local server_opts = opts.servers[server_name] or {}
-					server_opts.capabilities =
-						vim.tbl_deep_extend("force", {}, capabilities, server_opts.capabilities or {})
-
-					if opts.setup[server_name] then
-						if opts.setup[server_name](server_name, server_opts) then
-							return
-						end
-					end
-
-					lspconfig[server_name].setup(server_opts)
-				end,
-			})
-
-			-- Apply Catppuccin theme colors
 			vim.schedule(function()
 				local has_catppuccin, catppuccin = pcall(require, "catppuccin.palettes")
 				if has_catppuccin then
 					local palette = catppuccin.get_palette("frappe")
-
 					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextError", { fg = palette.red, bg = "NONE" })
 					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { fg = palette.yellow, bg = "NONE" })
 					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextInfo", { fg = palette.blue, bg = "NONE" })
@@ -611,13 +538,11 @@ return {
 		end,
 	},
 
-	-- Linting
 	{
 		"mfussenegger/nvim-lint",
 		event = { "BufReadPre", "BufNewFile" },
 		config = function()
 			local lint = require("lint")
-
 			lint.linters_by_ft = {
 				javascript = { "eslint" },
 				typescript = { "eslint" },
@@ -627,154 +552,12 @@ return {
 				lua = { "luacheck" },
 				sh = { "shellcheck" },
 			}
-
 			local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-
 			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
 				group = lint_augroup,
 				callback = function()
 					lint.try_lint()
 				end,
-			})
-		end,
-	},
-
-	{
-		"hrsh7th/nvim-cmp",
-		dependencies = {
-			"hrsh7th/cmp-emoji",
-			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/cmp-buffer",
-			"hrsh7th/cmp-path",
-			"hrsh7th/cmp-cmdline",
-			"L3MON4D3/LuaSnip",
-			"saadparwaiz1/cmp_luasnip",
-			"rafamadriz/friendly-snippets",
-			"onsails/lspkind.nvim",
-			{
-				"zbirenbaum/copilot-cmp",
-				optional = true,
-				config = function()
-					require("copilot_cmp").setup()
-				end,
-			},
-		},
-		opts = function(_, opts)
-			local cmp = require("cmp")
-			local has_copilot_cmp = pcall(require, "copilot_cmp")
-			local luasnip = require("luasnip")
-			local lspkind = require("lspkind")
-
-			require("luasnip.loaders.from_vscode").lazy_load()
-
-			opts.formatting = {
-				format = function(entry, vim_item)
-					local kind_icons = {
-						Text = "",
-						Method = "󰆧",
-						Function = "󰊕",
-						Constructor = "",
-						Field = "󰇽",
-						Variable = "󰂡",
-						Class = "󰠱",
-						Interface = "",
-						Module = "",
-						Property = "󰜢",
-						Unit = "",
-						Value = "󰎠",
-						Enum = "",
-						Keyword = "󰌋",
-						Snippet = "",
-						Color = "󰏘",
-						File = "󰈙",
-						Reference = "",
-						Folder = "󰉋",
-						EnumMember = "",
-						Constant = "󰏿",
-						Struct = "",
-						Event = "",
-						Operator = "󰆕",
-						TypeParameter = "󰅲",
-						Copilot = "",
-					}
-
-					vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind] or "", vim_item.kind)
-					vim_item.menu = ({
-						copilot = "[Copilot]",
-						nvim_lsp = "[LSP]",
-						buffer = "[BUF]",
-						path = "[PATH]",
-						emoji = "[EMOJI]",
-						luasnip = "[SNIP]",
-					})[entry.source.name]
-
-					return vim_item
-				end,
-			}
-
-			opts.window = {
-				completion = cmp.config.window.bordered(),
-				documentation = cmp.config.window.bordered(),
-			}
-
-			opts.sources = cmp.config.sources({
-				{ name = "copilot", group_index = 1, priority = 1000 },
-				{ name = "nvim_lsp", group_index = 2, priority = 900 },
-				{ name = "luasnip", group_index = 2, priority = 750 },
-				{ name = "path", group_index = 2, priority = 500 },
-			}, {
-				{ name = "buffer", group_index = 3, priority = 250 },
-				{ name = "emoji", group_index = 3, priority = 100 },
-			})
-
-			opts.sorting = {
-				priority_weight = 2,
-				comparators = {
-					has_copilot_cmp and require("copilot_cmp").prioritize or nil,
-					cmp.config.compare.offset,
-					cmp.config.compare.exact,
-					cmp.config.compare.score,
-					cmp.config.compare.recently_used,
-					cmp.config.compare.locality,
-					cmp.config.compare.kind,
-					cmp.config.compare.sort_text,
-					cmp.config.compare.length,
-					cmp.config.compare.order,
-				},
-			}
-
-			require("luasnip.loaders.from_vscode").lazy_load()
-
-			cmp.setup({
-				completion = {
-					completeopt = "menu,menuone,preview",
-				},
-				snippet = {
-					expand = function(args)
-						luasnip.lsp_expand(args.body)
-					end,
-				},
-				mapping = cmp.mapping.preset.insert({
-					["<C-k>"] = cmp.mapping.select_prev_item(),
-					["<C-j>"] = cmp.mapping.select_next_item(),
-					["<C-Space>"] = cmp.mapping.complete(),
-					["<C-e>"] = cmp.mapping.abort(),
-					["<CR>"] = cmp.mapping.confirm({ select = false, behavior = cmp.ConfirmBehavior.Replace }),
-					["<C-b>"] = cmp.mapping(function(fallback)
-						if luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<C-f>"] = cmp.mapping(function(fallback)
-						if luasnip.jumpable(1) then
-							luasnip.jump(1)
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-				}),
 			})
 		end,
 	},
@@ -812,24 +595,5 @@ return {
 			},
 		},
 		event = "VeryLazy",
-		config = function()
-			local fidget = require("fidget")
-			fidget.setup({
-				notification = {
-					window = {
-						normal_hl = "String", -- Base highlight group in the notification window
-						winblend = 0, -- Background color opacity in the notification window
-						border = "rounded", -- Border around the notification window
-						zindex = 45, -- Stacking priority of the notification window
-						max_width = 0, -- Maximum width of the notification window
-						max_height = 0, -- Maximum height of the notification window
-						x_padding = 1, -- Padding from right edge of window boundary
-						y_padding = 1, -- Padding from bottom edge of window boundary
-						align = "bottom", -- How to align the notification window
-						relative = "editor", -- What the notification window position is relative to
-					},
-				},
-			})
-		end,
 	},
 }
