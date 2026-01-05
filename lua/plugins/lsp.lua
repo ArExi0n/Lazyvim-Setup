@@ -199,6 +199,8 @@ return {
 				"gopls",
 				"css-lsp",
 				"html-lsp",
+				"swiftformat",
+				"swiftlint",
 				-- Linters
 				"luacheck",
 				"shellcheck",
@@ -291,28 +293,33 @@ return {
 					},
 				},
 
-				-- Swift LSP (Fixed configuration - moved out of ts_ls)
-				sourcekit = {
-					autostart = true,
-					cmd = { "sourcekit-lsp" },
-					filetypes = { "swift", "objc", "objcpp" },
-					root_dir = function(filename, bufnr)
-						local util = require("lspconfig.util")
-						return util.root_pattern("Package.swift", "*.xcodeproj", "*.xcworkspace", ".git")(filename)
-							or util.find_git_ancestor(filename)
-					end,
-					capabilities = {
-						workspace = {
-							didChangeWatchedFiles = {
-								dynamicRegistration = true,
-							},
-						},
-					},
-					settings = {},
-				},
+				sourcekit = function()
+					require("lspconfig").sourcekit.setup({
+						cmd = { "sourcekit-lsp" },
+						filetypes = { "swift", "objc", "objcpp" },
+						root_dir = function(filename)
+							local util = require("lspconfig.util")
+							return util.root_pattern(
+								"Package.swift",
+								".git",
+								"*.xcodeproj",
+								"*.xcworkspace"
+							)(filename)
+						end,
+						capabilities = require("cmp_nvim_lsp").default_capabilities(),
+						on_attach = function(client, bufnr)
+							-- Swift-specific settings
+							vim.bo[bufnr].tabstop = 4
+							vim.bo[bufnr].shiftwidth = 4
+							vim.bo[bufnr].expandtab = true
+						end,
+					})
+					return true
+				end,
+			},
 
-				eslint = {
-					autostart = true,
+      eslint = {
+				autostart = true,
 					settings = {
 						workingDirectories = { mode = "auto" },
 					},
@@ -427,14 +434,43 @@ return {
 		},
 
 		config = function(_, opts)
-			-- Configure diagnostics globally
 			vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
-			-- Auto-install LSP servers via mason-lspconfig
+			require("neoconf").setup()
+
+			local servers = vim.tbl_keys(opts.servers or {})
+			local ensure_installed = {}
+			for _, server in ipairs(servers) do
+				if server ~= "sourcekit" then
+					table.insert(ensure_installed, server)
+				end
+			end
+
 			require("mason-lspconfig").setup({
 				ensure_installed = vim.tbl_keys(opts.servers),
 				automatic_installation = true,
 			})
+
+			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+			require("mason-lspconfig").setup_handlers({
+				function(server_name)
+					local server_opts = opts.servers[server_name] or {}
+					server_opts.capabilities = vim.tbl_deep_extend(
+						"force", {}, capabilities, server_opts.capabilities or {}
+					)
+					require("lspconfig")[server_name].setup(server_opts)
+				end,
+			})
+
+			if opts.setup then
+				for server_name, setup_fn in pairs(opts.setup) do
+					if type(setup_fn) == "function" then
+						setup_fn()
+					end
+				end
+			end
 
 			-- Floating definition preview function
 			local function open_window_for_definition()

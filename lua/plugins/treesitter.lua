@@ -127,7 +127,7 @@ return {
 		},
 		config = function(_, opts)
 			-- Setup treesitter
-			require("nvim-treesitter.configs").setup(opts)
+			require("nvim-treesitter.config").setup(opts)
 
 			-- Fold settings for treesitter
 			vim.opt.foldmethod = "expr"
