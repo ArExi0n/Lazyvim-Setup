@@ -11,15 +11,15 @@ return {
 				element = "repl",
 				enabled = true,
 				icons = {
-					disconnect = "",
-					run_last = "",
+					disconnect = "",
+					run_last = "",
 					terminate = "⏹︎",
 					pause = "⏸︎",
-					play = "",
+					play = "",
 					step_into = "󰆹",
 					step_out = "󰆸",
-					step_over = "",
-					step_back = "",
+					step_over = "",
+					step_back = "",
 				},
 			},
 			floating = {
@@ -29,9 +29,9 @@ return {
 				},
 			},
 			icons = {
-				collapsed = "",
-				expanded = "",
-				current_frame = "",
+				collapsed = "",
+				expanded = "",
+				current_frame = "",
 			},
 			layouts = {
 				{
@@ -58,7 +58,7 @@ return {
 		local dap, dapui = require("dap"), require("dapui")
 		local group = vim.api.nvim_create_augroup("dapui_config", { clear = true })
 
-		-- hide ~ in DAPUI
+		-- Hide ~ in DAPUI
 		vim.api.nvim_create_autocmd("BufWinEnter", {
 			group = group,
 			pattern = "DAP*",
@@ -74,6 +74,7 @@ return {
 			end,
 		})
 
+		-- Auto-open/close DAP UI
 		dap.listeners.after.event_initialized["dapui_config"] = function()
 			dapui.open()
 		end
