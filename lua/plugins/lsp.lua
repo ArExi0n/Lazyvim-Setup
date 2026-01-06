@@ -227,7 +227,7 @@ return {
 			},
 
 			servers = {
-				ts_ls = {
+				tsserver = {
 					autostart = true,
 					root_dir = function(...)
 						return require("lspconfig.util").root_pattern(
@@ -411,10 +411,8 @@ return {
 				automatic_installation = true,
 			})
 
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-			-- Setup mason-lspconfig handlers
 			require("mason-lspconfig").setup_handlers({
 				function(server_name)
 					local server_opts = opts.servers[server_name] or {}
@@ -424,8 +422,30 @@ return {
 				end,
 			})
 
-			-- FIXED: Setup sourcekit manually since it's not in Mason
 			local lspconfig = require("lspconfig")
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			local on_attach = function(_, bufnr)
+				opts.buffer = bufnr
+
+				opts.desc = "Show line diagnostics"
+				vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
+
+				opts.desc = "Show documentation for what is under cursor"
+				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+
+				opts.desc = "Show LSP definition"
+				vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions trim_text=true<cr>", opts)
+			end
+
+			lspconfig["sourcekit"].setup({
+				cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
+				capabilities = capabilities,
+				on_attach = on_attach,
+				on_init = function(client)
+					client.offset_encoding = "utf-8"
+				end,
+			})
+
 			local sourcekit_opts = opts.servers.sourcekit or {}
 			sourcekit_opts.capabilities =
 				vim.tbl_deep_extend("force", {}, capabilities, sourcekit_opts.capabilities or {})
@@ -594,6 +614,5 @@ return {
 				},
 			},
 		},
-		event = "VeryLazy",
 	},
 }
