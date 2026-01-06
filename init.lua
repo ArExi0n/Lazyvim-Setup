@@ -10,4 +10,3 @@ end
 
 require("config.autocmds")
 require("config.lazy")
-require("tests")
