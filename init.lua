@@ -8,4 +8,6 @@ _G.dd = function(...)
 	_print(...)
 end
 
+require("config.autocmds")
 require("config.lazy")
+require("tests")
