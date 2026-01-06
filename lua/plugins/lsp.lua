@@ -432,9 +432,6 @@ return {
 
 				opts.desc = "Show documentation for what is under cursor"
 				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-
-				opts.desc = "Show LSP definition"
-				vim.keymap.set("n", "gd", "<cmd>Telescope lsp_definitions trim_text=true<cr>", opts)
 			end
 
 			lspconfig["sourcekit"].setup({
