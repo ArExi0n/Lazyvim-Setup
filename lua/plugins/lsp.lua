@@ -124,6 +124,9 @@ return {
 			}
 		end,
 		config = function(_, opts)
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
+			capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+
 			local cmp = require("cmp")
 			cmp.setup(opts)
 
@@ -265,7 +268,7 @@ return {
 				},
 
 				sourcekit = {
-					cmd = { "sourcekit-lsp" },
+					cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
 					filetypes = { "swift", "objc", "objcpp" },
 					root_dir = function(filename)
 						local util = require("lspconfig.util")
@@ -499,7 +502,6 @@ return {
 						})
 					end
 
-					map("n", "gd", open_window_for_definition, "LSP: Floating definition preview")
 					map("n", "<leader>gd", vim.lsp.buf.definition, "LSP: Go to definition")
 					map("n", "gD", vim.lsp.buf.declaration, "LSP: Go to declaration")
 					map("n", "gi", vim.lsp.buf.implementation, "LSP: Go to implementation")
@@ -529,14 +531,15 @@ return {
 					vim.api.nvim_create_autocmd("CursorHold", {
 						buffer = bufnr,
 						callback = function()
-							vim.diagnostic.open_float(nil, {
+							local opts = {
 								focusable = false,
-								close_events = { "BufLeave", "CursorMoved", "InsertEnter" },
+								close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
 								border = "rounded",
 								source = "always",
 								prefix = " ",
 								scope = "cursor",
-							})
+							}
+							vim.diagnostic.open_float(nil, opts)
 						end,
 					})
 				end,

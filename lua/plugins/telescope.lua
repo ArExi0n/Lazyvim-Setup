@@ -11,18 +11,15 @@ return {
 			},
 			"nvim-telescope/telescope-file-browser.nvim",
 		},
+
 		keys = {
 			-- File pickers
 			{
 				";f",
 				function()
-					local builtin = require("telescope.builtin")
-					builtin.find_files({
-						no_ignore = false,
-						hidden = true,
-					})
+					require("telescope.builtin").find_files({ hidden = true })
 				end,
-				desc = "Lists files in your current working directory, respects .gitignore",
+				desc = "Find files (respects .gitignore)",
 			},
 			{
 				"<leader>ff",
@@ -39,14 +36,13 @@ return {
 				desc = "Git files",
 			},
 
-			-- Search pickers
+			-- Search
 			{
 				";r",
 				function()
-					local builtin = require("telescope.builtin")
-					builtin.live_grep()
+					require("telescope.builtin").live_grep()
 				end,
-				desc = "Search for a string in your current working directory",
+				desc = "Live grep",
 			},
 			{
 				"<leader>ps",
@@ -58,54 +54,46 @@ return {
 			{
 				"<leader>pws",
 				function()
-					local word = vim.fn.expand("<cword>")
-					require("telescope.builtin").grep_string({ search = word })
+					require("telescope.builtin").grep_string({ search = vim.fn.expand("<cword>") })
 				end,
-				desc = "Search word under cursor",
 			},
 			{
 				"<leader>pWs",
 				function()
-					local word = vim.fn.expand("<cWORD>")
-					require("telescope.builtin").grep_string({ search = word })
+					require("telescope.builtin").grep_string({ search = vim.fn.expand("<cWORD>") })
 				end,
-				desc = "Search WORD under cursor",
 			},
 
-			-- Buffer and history pickers
+			-- Buffers & history
 			{
 				"\\\\",
 				function()
-					local builtin = require("telescope.builtin")
-					builtin.buffers()
+					require("telescope.builtin").buffers()
 				end,
-				desc = "Lists open buffers",
+				desc = "Buffers",
 			},
 			{
 				";;",
 				function()
-					local builtin = require("telescope.builtin")
-					builtin.resume()
+					require("telescope.builtin").resume()
 				end,
-				desc = "Resume the previous telescope picker",
+				desc = "Resume picker",
 			},
 
-			-- Diagnostic and code pickers
+			-- Diagnostics & code
 			{
 				";e",
 				function()
-					local builtin = require("telescope.builtin")
-					builtin.diagnostics()
+					require("telescope.builtin").diagnostics()
 				end,
-				desc = "Lists Diagnostics for all open buffers",
+				desc = "Diagnostics",
 			},
 			{
 				";s",
 				function()
-					local builtin = require("telescope.builtin")
-					builtin.treesitter()
+					require("telescope.builtin").treesitter()
 				end,
-				desc = "Lists Function names, variables from Treesitter",
+				desc = "Treesitter symbols",
 			},
 
 			-- Help
@@ -122,42 +110,55 @@ return {
 				"sf",
 				function()
 					local telescope = require("telescope")
-					local function telescope_buffer_dir()
+					local function buffer_dir()
 						return vim.fn.expand("%:p:h")
 					end
 					telescope.extensions.file_browser.file_browser({
 						path = "%:p:h",
-						cwd = telescope_buffer_dir(),
-						respect_gitignore = false,
+						cwd = buffer_dir(),
 						hidden = true,
 						grouped = true,
 						previewer = false,
 						initial_mode = "normal",
-						layout_config = { height = 40 },
+						layout_config = { height = 0.85 },
 					})
 				end,
-				desc = "Open File Browser with the path of the current buffer",
+				desc = "File browser",
 			},
 		},
+
 		config = function(_, opts)
 			local telescope = require("telescope")
 			local actions = require("telescope.actions")
 			local fb_actions = telescope.extensions.file_browser.actions
 
-			-- Default configurations
 			opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
 				wrap_results = true,
-				layout_strategy = "horizontal",
-				layout_config = {
-					prompt_position = "top",
-					preview_width = 0.55,
-					width = 0.87,
-					height = 0.80,
-				},
 				sorting_strategy = "ascending",
 				winblend = 0,
+				layout_strategy = "horizontal",
+
+				layout_config = {
+					horizontal = {
+						prompt_position = "top",
+						preview_width = 0.55,
+						width = 0.87,
+						height = 0.80,
+					},
+					vertical = {
+						prompt_position = "top",
+						preview_cutoff = 40,
+						width = 0.87,
+						height = 0.80,
+					},
+					center = {
+						prompt_position = "top",
+						width = 0.87,
+						height = 0.60,
+					},
+				},
+
 				mappings = {
-					n = {},
 					i = {
 						["<C-j>"] = actions.move_selection_next,
 						["<C-k>"] = actions.move_selection_previous,
@@ -165,14 +166,11 @@ return {
 				},
 			})
 
-			-- Picker-specific configurations
 			opts.pickers = {
 				diagnostics = {
 					theme = "ivy",
 					initial_mode = "normal",
-					layout_config = {
-						preview_cutoff = 9999,
-					},
+					layout_config = { preview_cutoff = 9999 },
 				},
 				find_files = {
 					hidden = true,
@@ -180,7 +178,6 @@ return {
 				},
 			}
 
-			-- Extension configurations
 			opts.extensions = {
 				fzf = {
 					fuzzy = true,
@@ -192,17 +189,17 @@ return {
 					theme = "dropdown",
 					hijack_netrw = true,
 					mappings = {
-						["n"] = {
+						n = {
 							["N"] = fb_actions.create,
 							["h"] = fb_actions.goto_parent_dir,
-							["<C-u>"] = function(prompt_bufnr)
-								for i = 1, 10 do
-									actions.move_selection_previous(prompt_bufnr)
+							["<C-u>"] = function(buf)
+								for _ = 1, 10 do
+									actions.move_selection_previous(buf)
 								end
 							end,
-							["<C-d>"] = function(prompt_bufnr)
-								for i = 1, 10 do
-									actions.move_selection_next(prompt_bufnr)
+							["<C-d>"] = function(buf)
+								for _ = 1, 10 do
+									actions.move_selection_next(buf)
 								end
 							end,
 						},
@@ -211,8 +208,6 @@ return {
 			}
 
 			telescope.setup(opts)
-
-			-- Load extensions
 			telescope.load_extension("fzf")
 			telescope.load_extension("file_browser")
 		end,

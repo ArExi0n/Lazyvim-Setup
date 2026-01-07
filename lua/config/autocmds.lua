@@ -1,39 +1,52 @@
--- Auto-start Swift LSP when opening Swift files
+local lspconfig = require("lspconfig")
+local util = require("lspconfig.util")
 
-local function ensure_sourcekit_for_buf(bufnr)
-	local ok, lspconfig = pcall(require, "lspconfig")
-	if not ok or not lspconfig or not lspconfig.sourcekit then
+local function start_sourcekit(root_dir)
+	if not root_dir then
 		return
 	end
 
-	-- If not set up yet → set it up
-	if not lspconfig.sourcekit.manager then
-		local path = vim.trim(vim.fn.system("xcrun -f sourcekit-lsp 2>/dev/null") or "")
-		if path == "" and vim.fn.executable("sourcekit-lsp") == 1 then
-			path = "sourcekit-lsp"
-		end
-		if path == "" then
+	-- Check if already running for this root
+	for _, client in ipairs(vim.lsp.get_clients()) do
+		if client.name == "sourcekit" and client.config.root_dir == root_dir then
 			return
 		end
-
-		lspconfig.sourcekit.setup({
-			cmd = { path },
-			single_file_support = true,
-			on_init = function(client)
-				client.offset_encoding = "utf-8"
-			end,
-		})
 	end
 
-	-- Attach to current buffer
-	pcall(function()
-		lspconfig.sourcekit.manager.try_add(bufnr)
-	end)
+	local cmd = vim.fn.trim(vim.fn.system("xcrun -f sourcekit-lsp 2>/dev/null"))
+	if cmd == "" then
+		cmd = "sourcekit-lsp"
+	end
+
+	vim.lsp.start({
+		name = "sourcekit",
+		cmd = { cmd },
+		root_dir = root_dir,
+		capabilities = vim.lsp.protocol.make_client_capabilities(),
+		on_init = function(client)
+			client.offset_encoding = "utf-8"
+		end,
+	})
 end
 
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "swift",
+local function attach_swift(bufnr)
+	local fname = vim.api.nvim_buf_get_name(bufnr)
+	if fname == "" then
+		return
+	end
+
+	local root = util.root_pattern("Package.swift", ".xcodeproj", ".xcworkspace", ".git")(fname)
+
+	start_sourcekit(root)
+
+	vim.defer_fn(function()
+		vim.lsp.buf_attach_client(bufnr, vim.lsp.get_clients({ name = "sourcekit" })[1].id)
+	end, 300)
+end
+
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+	pattern = "*.swift",
 	callback = function(ev)
-		ensure_sourcekit_for_buf(ev.buf)
+		attach_swift(ev.buf)
 	end,
 })
