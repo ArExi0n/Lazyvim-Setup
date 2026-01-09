@@ -89,6 +89,7 @@ return {
 		vim.keymap.set("n", "<leader>b", xcodebuild.toggle_breakpoint, { desc = "Toggle Breakpoint" })
 		vim.keymap.set("n", "<leader>B", xcodebuild.toggle_message_breakpoint, { desc = "Toggle Message Breakpoint" })
 
+		-- Terminate debugger
 		vim.keymap.set("n", "<leader>dx", function()
 			xcodebuild.terminate_session()
 			require("dap").listeners.after["event_terminated"]["me"]()
