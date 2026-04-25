@@ -203,7 +203,7 @@ return {
 			autostart = true,
 			inlay_hints = { enabled = true },
 			diagnostics = {
-				underline = true,
+				underline = false,
 				update_in_insert = false,
 				virtual_text = {
 					spacing = 4,
@@ -436,20 +436,6 @@ return {
 				opts.desc = "Show documentation for what is under cursor"
 				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 			end
-
-			lspconfig["sourcekit"].setup({
-				cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
-				capabilities = capabilities,
-				on_attach = on_attach,
-				on_init = function(client)
-					client.offset_encoding = "utf-8"
-				end,
-			})
-
-			local sourcekit_opts = opts.servers.sourcekit or {}
-			sourcekit_opts.capabilities =
-				vim.tbl_deep_extend("force", {}, capabilities, sourcekit_opts.capabilities or {})
-			lspconfig.sourcekit.setup(sourcekit_opts)
 
 			if opts.setup then
 				for server_name, setup_fn in pairs(opts.setup) do

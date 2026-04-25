@@ -108,3 +108,29 @@ end, { desc = "Make it rain" })
 vim.keymap.set("n", "<leader><leader>", function()
 	vim.cmd("so")
 end, { desc = "Reload config" })
+
+vim.keymap.set("n", "<leader>tp", function()
+  vim.lsp.buf.execute_command({
+    command = "tinymist.startDefaultPreview",
+    arguments = { vim.api.nvim_buf_get_name(0) },
+  })
+end, { desc = "Typst: start preview" })
+
+vim.keymap.set("n", "<leader>tP", function()
+  vim.lsp.buf.execute_command({
+    command = "tinymist.stopPreview",
+    arguments = {},
+  })
+end, { desc = "Typst: stop preview" })
+
+vim.keymap.set("n", "<leader>te", function()
+  vim.lsp.buf.execute_command({
+    command = "tinymist.exportPdf",
+    arguments = { vim.api.nvim_buf_get_name(0) },
+  })
+end, { desc = "Typst: export PDF" })
+
+vim.keymap.set("n", "<leader>tv", function()
+  local pdf = vim.fn.expand("%:r") .. ".pdf"
+  vim.fn.jobstart({ "sioyek", pdf }, { detach = true })
+end, { desc = "Typst: open in sioyek" }) sioyek" })
