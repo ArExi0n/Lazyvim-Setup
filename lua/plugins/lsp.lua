@@ -1,172 +1,5 @@
 return {
 	{
-		"hrsh7th/nvim-cmp",
-		version = false,
-		event = "InsertEnter",
-		dependencies = {
-			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/cmp-buffer",
-			"hrsh7th/cmp-path",
-			"hrsh7th/cmp-cmdline",
-			"saadparwaiz1/cmp_luasnip",
-		},
-		opts = function()
-			local cmp = require("cmp")
-			local luasnip = require("luasnip")
-
-			return {
-				completion = {
-					completeopt = "menu,menuone,noinsert",
-				},
-				snippet = {
-					expand = function(args)
-						luasnip.lsp_expand(args.body)
-					end,
-				},
-				window = {
-					completion = cmp.config.window.bordered({
-						winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-					}),
-					documentation = cmp.config.window.bordered({
-						winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
-					}),
-				},
-				mapping = cmp.mapping.preset.insert({
-					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() then
-							cmp.confirm({ select = true })
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if luasnip.jumpable(-1) then
-							luasnip.jump(-1)
-						else
-							fallback()
-						end
-					end, { "i", "s" }),
-					["<C-CR>"] = cmp.mapping.complete(),
-					["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-					["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-					["<C-b>"] = cmp.mapping.scroll_docs(-4),
-					["<C-f>"] = cmp.mapping.scroll_docs(4),
-					["<C-e>"] = cmp.mapping.abort(),
-					["<CR>"] = cmp.mapping.confirm({ select = false }),
-				}),
-				sources = cmp.config.sources({
-					{ name = "nvim_lsp", priority = 1000 },
-					{ name = "luasnip", priority = 750 },
-					{ name = "path", priority = 500 },
-				}, {
-					{ name = "buffer", priority = 250, keyword_length = 3 },
-				}),
-				formatting = {
-					format = function(entry, vim_item)
-						local kind_icons = {
-							Text = "󰉿",
-							Method = "󰆧",
-							Function = "󰊕",
-							Constructor = "",
-							Field = "󰜢",
-							Variable = "󰀫",
-							Class = "󰠱",
-							Interface = "",
-							Module = "",
-							Property = "󰜢",
-							Unit = "󰑭",
-							Value = "󰎠",
-							Enum = "",
-							Keyword = "󰌋",
-							Snippet = "",
-							Color = "󰏘",
-							File = "󰈙",
-							Reference = "󰈇",
-							Folder = "󰉋",
-							EnumMember = "",
-							Constant = "󰏿",
-							Struct = "󰙅",
-							Event = "",
-							Operator = "󰆕",
-							TypeParameter = "",
-						}
-						vim_item.kind = string.format("%s %s", kind_icons[vim_item.kind] or "", vim_item.kind)
-						vim_item.menu = ({
-							nvim_lsp = "[LSP]",
-							luasnip = "[Snippet]",
-							buffer = "[Buffer]",
-							path = "[Path]",
-						})[entry.source.name]
-						return vim_item
-					end,
-				},
-				experimental = {
-					ghost_text = {
-						hl_group = "CmpGhostText",
-					},
-				},
-				sorting = {
-					priority_weight = 2,
-					comparators = {
-						cmp.config.compare.offset,
-						cmp.config.compare.exact,
-						cmp.config.compare.score,
-						cmp.config.compare.recently_used,
-						cmp.config.compare.locality,
-						cmp.config.compare.kind,
-						cmp.config.compare.sort_text,
-						cmp.config.compare.length,
-						cmp.config.compare.order,
-					},
-				},
-			}
-		end,
-		config = function(_, opts)
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-
-			local cmp = require("cmp")
-			cmp.setup(opts)
-
-			cmp.setup.cmdline("/", {
-				mapping = cmp.mapping.preset.cmdline(),
-				sources = {
-					{ name = "buffer" },
-				},
-			})
-
-			cmp.setup.cmdline(":", {
-				mapping = cmp.mapping.preset.cmdline(),
-				sources = cmp.config.sources({
-					{ name = "path" },
-				}, {
-					{ name = "cmdline" },
-				}),
-			})
-		end,
-	},
-
-	{
-		"L3MON4D3/LuaSnip",
-		version = "v2.*",
-		build = "make install_jsregexp",
-		dependencies = {
-			"rafamadriz/friendly-snippets",
-		},
-		opts = {
-			history = true,
-			delete_check_events = "TextChanged",
-			region_check_events = "CursorMoved",
-		},
-		config = function(_, opts)
-			require("luasnip").setup(opts)
-			require("luasnip.loaders.from_vscode").lazy_load()
-		end,
-	},
-
-	{
 		"mason-org/mason.nvim",
 		opts = function(_, opts)
 			opts.ensure_installed = opts.ensure_installed or {}
@@ -230,7 +63,8 @@ return {
 			},
 
 			servers = {
-				tsserver = {
+				-- tsserver renamed to ts_ls in lspconfig 0.11+
+				ts_ls = {
 					autostart = true,
 					root_dir = function(...)
 						return require("lspconfig.util").root_pattern(
@@ -271,10 +105,14 @@ return {
 					cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
 					filetypes = { "swift", "objc", "objcpp" },
 					root_dir = function(filename)
-						local util = require("lspconfig.util")
-						return util.root_pattern("Package.swift", ".git", "*.xcodeproj", "*.xcworkspace")(filename)
+						return require("lspconfig.util").root_pattern(
+							"Package.swift",
+							".git",
+							"*.xcodeproj",
+							"*.xcworkspace"
+						)(filename)
 					end,
-					on_attach = function(client, bufnr)
+					on_attach = function(_, bufnr)
 						vim.bo[bufnr].tabstop = 4
 						vim.bo[bufnr].shiftwidth = 4
 						vim.bo[bufnr].expandtab = true
@@ -283,26 +121,13 @@ return {
 
 				eslint = {
 					autostart = true,
-					settings = {
-						workingDirectories = { mode = "auto" },
-					},
+					settings = { workingDirectories = { mode = "auto" } },
 				},
 
-				jsonls = {
-					autostart = true,
-				},
-
-				bashls = {
-					autostart = true,
-				},
-
-				cssls = {
-					autostart = true,
-				},
-
-				html = {
-					autostart = true,
-				},
+				jsonls = { autostart = true },
+				bashls = { autostart = true },
+				cssls = { autostart = true },
+				html = { autostart = true },
 
 				tailwindcss = {
 					autostart = true,
@@ -333,13 +158,8 @@ return {
 					single_file_support = true,
 					settings = {
 						Lua = {
-							workspace = {
-								checkThirdParty = false,
-							},
-							completion = {
-								workspaceWord = true,
-								callSnippet = "Both",
-							},
+							workspace = { checkThirdParty = false },
+							completion = { workspaceWord = true, callSnippet = "Both" },
 							hint = {
 								enable = true,
 								setType = false,
@@ -360,17 +180,9 @@ return {
 					autostart = true,
 					settings = {
 						["rust-analyzer"] = {
-							cargo = {
-								allFeatures = true,
-								loadOutDirsFromCheck = true,
-							},
-							checkOnSave = {
-								command = "clippy",
-								allFeatures = true,
-							},
-							procMacro = {
-								enable = true,
-							},
+							cargo = { allFeatures = true, loadOutDirsFromCheck = true },
+							checkOnSave = { command = "clippy", allFeatures = true },
+							procMacro = { enable = true },
 						},
 					},
 				},
@@ -379,31 +191,34 @@ return {
 					autostart = true,
 					settings = {
 						gopls = {
-							analyses = {
-								unusedparams = true,
-							},
+							analyses = { unusedparams = true },
 							staticcheck = true,
 							gofumpt = true,
 						},
 					},
 				},
 
-				zls = {
-					autostart = true,
-				},
+				zls = { autostart = true },
 			},
 
 			setup = {},
 		},
 
 		config = function(_, opts)
-			vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
+			local capabilities = vim.lsp.protocol.make_client_capabilities()
 
+			-- blink.cmp capabilities if available
+			local ok, blink = pcall(require, "blink.cmp")
+			if ok then
+				capabilities = blink.get_lsp_capabilities(capabilities)
+			end
+			capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+			vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 			require("neoconf").setup()
 
-			local servers = vim.tbl_keys(opts.servers or {})
 			local ensure_installed = {}
-			for _, server in ipairs(servers) do
+			for server, _ in pairs(opts.servers or {}) do
 				if server ~= "sourcekit" then
 					table.insert(ensure_installed, server)
 				end
@@ -414,8 +229,6 @@ return {
 				automatic_installation = true,
 			})
 
-			capabilities.textDocument.completion.completionItem.snippetSupport = true
-
 			require("mason-lspconfig").setup_handlers({
 				function(server_name)
 					local server_opts = opts.servers[server_name] or {}
@@ -425,59 +238,10 @@ return {
 				end,
 			})
 
-			local lspconfig = require("lspconfig")
-			local capabilities = vim.lsp.protocol.make_client_capabilities()
-			local on_attach = function(_, bufnr)
-				opts.buffer = bufnr
-
-				opts.desc = "Show line diagnostics"
-				vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts)
-
-				opts.desc = "Show documentation for what is under cursor"
-				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-			end
-
-			if opts.setup then
-				for server_name, setup_fn in pairs(opts.setup) do
-					if type(setup_fn) == "function" then
-						setup_fn()
-					end
-				end
-			end
-
-			local function open_window_for_definition()
-				local params = vim.lsp.util.make_position_params()
-				vim.lsp.buf_request(0, "textDocument/definition", params, function(_, result)
-					if not result or vim.tbl_isempty(result) then
-						vim.diagnostic.open_float(nil, { border = "rounded", source = true, scope = "line" })
-						return
-					end
-					local loc = result[1]
-					if not loc or not loc.uri then
-						vim.diagnostic.open_float(nil, { border = "rounded", source = true, scope = "line" })
-						return
-					end
-					local bufnr = vim.uri_to_bufnr(loc.uri)
-					vim.fn.bufload(bufnr)
-					local lines =
-						vim.api.nvim_buf_get_lines(bufnr, loc.range.start.line, loc.range["end"].line + 1, false)
-					local content = table.concat(lines, "\n")
-					vim.lsp.util.open_floating_preview(vim.split(content, "\n"), "typescript", {
-						border = "rounded",
-						focusable = true,
-						max_width = 80,
-						max_height = 20,
-					})
-				end)
-			end
-
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(ev)
 					local bufnr = ev.buf
-					local client = vim.lsp.get_client_by_id(ev.data.client_id)
-
-					vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
 					local function map(mode, lhs, rhs, desc)
 						vim.keymap.set(mode, lhs, rhs, {
@@ -492,7 +256,7 @@ return {
 					map("n", "gD", vim.lsp.buf.declaration, "LSP: Go to declaration")
 					map("n", "gi", vim.lsp.buf.implementation, "LSP: Go to implementation")
 					map("n", "gr", vim.lsp.buf.references, "LSP: References")
-					map("n", "K", vim.lsp.buf.hover, "LSP: Hover documentation")
+					map("n", "K", vim.lsp.buf.hover, "LSP: Hover")
 					map("n", "<leader>vws", vim.lsp.buf.workspace_symbol, "LSP: Workspace symbol")
 					map("n", "<leader>vd", function()
 						vim.diagnostic.open_float(0, { scope = "line" })
@@ -507,38 +271,30 @@ return {
 						vim.lsp.buf.format({ async = true })
 					end, "LSP: Format")
 
-					vim.api.nvim_create_autocmd("BufWritePost", {
-						buffer = bufnr,
-						callback = function()
-							vim.diagnostic.show(nil, bufnr)
-						end,
-					})
-
 					vim.api.nvim_create_autocmd("CursorHold", {
 						buffer = bufnr,
 						callback = function()
-							local opts = {
+							vim.diagnostic.open_float(nil, {
 								focusable = false,
 								close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
 								border = "rounded",
 								source = "always",
 								prefix = " ",
 								scope = "cursor",
-							}
-							vim.diagnostic.open_float(nil, opts)
+							})
 						end,
 					})
 				end,
 			})
 
 			vim.schedule(function()
-				local has_catppuccin, catppuccin = pcall(require, "catppuccin.palettes")
-				if has_catppuccin then
-					local palette = catppuccin.get_palette("frappe")
-					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextError", { fg = palette.red, bg = "NONE" })
-					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { fg = palette.yellow, bg = "NONE" })
-					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextInfo", { fg = palette.blue, bg = "NONE" })
-					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextHint", { fg = palette.teal, bg = "NONE" })
+				local ok2, catppuccin = pcall(require, "catppuccin.palettes")
+				if ok2 then
+					local p = catppuccin.get_palette("frappe")
+					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextError", { fg = p.red, bg = "NONE" })
+					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { fg = p.yellow, bg = "NONE" })
+					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextInfo", { fg = p.blue, bg = "NONE" })
+					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextHint", { fg = p.teal, bg = "NONE" })
 				end
 			end)
 		end,
@@ -558,9 +314,9 @@ return {
 				lua = { "luacheck" },
 				sh = { "shellcheck" },
 			}
-			local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+			local group = vim.api.nvim_create_augroup("lint", { clear = true })
 			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-				group = lint_augroup,
+				group = group,
 				callback = function()
 					lint.try_lint()
 				end,
@@ -595,9 +351,7 @@ return {
 		"j-hui/fidget.nvim",
 		opts = {
 			notification = {
-				window = {
-					winblend = 0,
-				},
+				window = { winblend = 0 },
 			},
 		},
 	},

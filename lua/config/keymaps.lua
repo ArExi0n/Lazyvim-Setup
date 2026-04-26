@@ -2,7 +2,7 @@
 vim.g.mapleader = " "
 
 -- File explorer
-vim.keymap.set("n", "<leader>pv", ":NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
+vim.keymap.set("n", "<leader>pv", "<cmd>Neotree toggle<CR>", { desc = "Toggle file explorer" })
 
 -- Move selected lines
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
@@ -110,27 +110,27 @@ vim.keymap.set("n", "<leader><leader>", function()
 end, { desc = "Reload config" })
 
 vim.keymap.set("n", "<leader>tp", function()
-  vim.lsp.buf.execute_command({
-    command = "tinymist.startDefaultPreview",
-    arguments = { vim.api.nvim_buf_get_name(0) },
-  })
+	vim.lsp.buf.execute_command({
+		command = "tinymist.startDefaultPreview",
+		arguments = { vim.api.nvim_buf_get_name(0) },
+	})
 end, { desc = "Typst: start preview" })
 
 vim.keymap.set("n", "<leader>tP", function()
-  vim.lsp.buf.execute_command({
-    command = "tinymist.stopPreview",
-    arguments = {},
-  })
+	vim.lsp.buf.execute_command({
+		command = "tinymist.stopPreview",
+		arguments = {},
+	})
 end, { desc = "Typst: stop preview" })
 
 vim.keymap.set("n", "<leader>te", function()
-  vim.lsp.buf.execute_command({
-    command = "tinymist.exportPdf",
-    arguments = { vim.api.nvim_buf_get_name(0) },
-  })
+	vim.lsp.buf.execute_command({
+		command = "tinymist.exportPdf",
+		arguments = { vim.api.nvim_buf_get_name(0) },
+	})
 end, { desc = "Typst: export PDF" })
 
 vim.keymap.set("n", "<leader>tv", function()
-  local pdf = vim.fn.expand("%:r") .. ".pdf"
-  vim.fn.jobstart({ "sioyek", pdf }, { detach = true })
-end, { desc = "Typst: open in sioyek" }) sioyek" })
+	local pdf = vim.fn.expand("%:r") .. ".pdf"
+	vim.fn.jobstart({ "sioyek", pdf }, { detach = true })
+end, { buffer = bufnr, desc = "Typst: open in sioyek" })

@@ -1,6 +1,7 @@
-if vim.loader then
-	vim.loader.enable()
-end
+-- vim.loader disabled due to startswith nil error
+-- if vim.loader then
+-- 	vim.loader.enable()
+-- end
 
 local _print = vim.print
 
