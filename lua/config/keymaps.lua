@@ -134,3 +134,7 @@ vim.keymap.set("n", "<leader>tv", function()
 	local pdf = vim.fn.expand("%:r") .. ".pdf"
 	vim.fn.jobstart({ "sioyek", pdf }, { detach = true })
 end, { buffer = bufnr, desc = "Typst: open in sioyek" })
+
+-- Theme switching
+vim.keymap.set("n", "<leader>ts", "<cmd>Theme<CR>", { desc = "Select theme" })
+vim.keymap.set("n", "<leader>tn", "<cmd>ThemeNext<CR>", { desc = "Next theme" })

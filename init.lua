@@ -11,3 +11,7 @@ end
 
 require("config.autocmds")
 require("config.lazy")
+
+require("config.theme").setup({
+	default = "koda",
+})

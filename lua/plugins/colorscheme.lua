@@ -1,8 +1,13 @@
 return {
 	{
+		"oskarnurm/koda.nvim",
+		name = "koda",
+		priority = 1000,
+	},
+	{
 		"catppuccin/nvim",
 		name = "catppuccin",
-		priority = 1000,
+		priority = 900,
 		config = function()
 			require("catppuccin").setup({
 				flavour = "frappe", -- latte, frappe, macchiato, mocha

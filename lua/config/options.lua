@@ -22,7 +22,7 @@ vim.opt.incsearch = true
 vim.opt.termguicolors = true
 
 vim.opt.scrolloff = 10
-vim.opt.signcolumn = "yes"
+vim.opt.signcolumn = "auto"
 vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 300
@@ -54,3 +54,19 @@ vim.opt.splitright = true
 vim.opt.splitkeep = "cursor"
 vim.opt.mouse = "a"
 vim.opt.formatoptions:append({ "r" })
+
+vim.opt.clipboard:append("unnamedplus")
+vim.opt.smartcase = true
+
+vim.filetype.add({
+	extension = {
+		gd = "gdscript",
+		gdshader = "gdshader",
+		gdshaderinc = "gdshaderinc",
+		tres = "gdresource",
+		tscn = "gdresource",
+	},
+	filename = {
+		["project.godot"] = "godot",
+	},
+})

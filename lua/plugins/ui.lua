@@ -1,5 +1,18 @@
 return {
 	{
+		"sphamba/smear-cursor.nvim",
+		opts = {
+			time_interval = 10,
+			stiffness = 0.8,
+			trailing_stiffness = 0.6,
+			damping = 0.9,
+			stiffness_insert_mode = 0.7,
+			trailing_stiffness_insert_mode = 0.7,
+			damping_insert_mode = 0.95,
+			distance_stop_animating = 0.5,
+		},
+	},
+	{
 		"nvimdev/dashboard-nvim",
 		enabled = false,
 	},
@@ -185,6 +198,12 @@ return {
 				},
 				renderer = {
 					group_empty = true,
+					icons = {
+						webdevicons = {
+							file = { enable = true, color = false },
+							folder = { enable = true, color = false },
+						},
+					},
 				},
 				filters = {
 					dotfiles = true,
@@ -192,15 +211,8 @@ return {
 						"node_modules/.*",
 					},
 				},
-				log = {
-					enable = true,
-					truncate = true,
-					types = {
-						diagnostics = true,
-						git = true,
-						profile = true,
-						watcher = true,
-					},
+				git = {
+					enable = false,
 				},
 			})
 

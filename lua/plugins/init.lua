@@ -6,6 +6,7 @@ return {
   { import = "plugins.local" },
   { import = "plugins.lsp" },
   { import = "plugins.neoconf" },
+  { import = "plugins.obsidian" },
   { import = "plugins.nvim-dap" },
   { import = "plugins.nvim-dapui" },
   { import = "plugins.refactoring" },
