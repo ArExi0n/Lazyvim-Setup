@@ -74,21 +74,10 @@ return {
 		},
 	},
 
-	-- buffer line
+	-- buffer line (disabled, using native buffer keymaps instead)
 	{
 		"akinsho/bufferline.nvim",
-		event = "VeryLazy",
-		keys = {
-			{ "<Tab>", "<Cmd>BufferLineCycleNext<CR>", desc = "Next tab" },
-			{ "<S-Tab>", "<Cmd>BufferLineCyclePrev<CR>", desc = "Prev tab" },
-		},
-		opts = {
-			options = {
-				mode = "tabs",
-				show_buffer_close_icons = false,
-				show_close_icon = false,
-			},
-		},
+		enabled = false,
 	},
 
 	-- filename
@@ -98,7 +87,6 @@ return {
 		event = "BufReadPre",
 		priority = 1200,
 		config = function()
-			local helpers = require("incline.helpers")
 			require("incline").setup({
 				window = {
 					padding = 0,
@@ -106,15 +94,17 @@ return {
 				},
 				render = function(props)
 					local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(props.buf), ":t")
-					local ft_icon, ft_color = require("nvim-web-devicons").get_icon_color(filename)
+					local ft_icon = require("nvim-web-devicons").get_icon(filename)
+					local normal = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+					local bg = normal.bg or 0x000000
+					local fg = normal.fg or 0xffffff
 					local modified = vim.bo[props.buf].modified
 					local buffer = {
-						ft_icon and { " ", ft_icon, " ", guibg = ft_color, guifg = helpers.contrast_color(ft_color) }
-							or "",
+						ft_icon and { " ", ft_icon, " ", guibg = bg, guifg = fg } or "",
 						" ",
 						{ filename, gui = modified and "bold,italic" or "bold" },
 						" ",
-						guibg = "#363944",
+						guibg = bg,
 					}
 					return buffer
 				end,
@@ -198,8 +188,20 @@ return {
 				},
 				renderer = {
 					group_empty = true,
+					highlight_git = false,
+					full_name = true,
+					symlink_destination = false,
+					indent_markers = {
+						enable = false,
+					},
 					icons = {
-						webdevicons = {
+						show = {
+							file = true,
+							folder = true,
+							folder_arrow = false,
+							git = false,
+						},
+						web_devicons = {
 							file = { enable = true, color = false },
 							folder = { enable = true, color = false },
 						},
@@ -211,8 +213,13 @@ return {
 						"node_modules/.*",
 					},
 				},
+				diagnostics = {
+					enable = false,
+					show_on_dirs = false,
+				},
 				git = {
 					enable = false,
+					show_on_dirs = false,
 				},
 			})
 

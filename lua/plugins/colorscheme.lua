@@ -1,8 +1,19 @@
+local function is_koda()
+	return vim.g.colors_name and vim.g.colors_name:match("^koda")
+end
+
 return {
 	{
 		"oskarnurm/koda.nvim",
 		name = "koda",
 		priority = 1000,
+		config = function()
+			require("config.koda").setup("koda-dark")
+			vim.cmd.colorscheme("koda-dark")
+			if is_koda() then
+				pcall(require("config.monochrome").apply)
+			end
+		end,
 	},
 	{
 		"catppuccin/nvim",
@@ -10,7 +21,7 @@ return {
 		priority = 900,
 		config = function()
 			require("catppuccin").setup({
-				flavour = "frappe", -- latte, frappe, macchiato, mocha
+				flavour = "frappe",
 				transparent_background = true,
 				show_end_of_buffer = false,
 				term_colors = false,
@@ -39,19 +50,12 @@ return {
 				color_overrides = {},
 				custom_highlights = function(colors)
 					return {
-						-- Disable cursor line highlighting
 						CursorLine = { bg = "NONE" },
 						CursorLineNr = { fg = colors.lavender, bg = "NONE" },
-
-						-- Disable LSP reference highlighting (word under cursor)
 						LspReferenceText = { bg = "NONE" },
 						LspReferenceRead = { bg = "NONE" },
 						LspReferenceWrite = { bg = "NONE" },
-
-						-- Disable visual selection of matching words
 						MatchParen = { fg = colors.peach, bg = "NONE", bold = true },
-
-						-- Telescope transparency
 						TelescopeNormal = { bg = "NONE" },
 						TelescopeBorder = { bg = "NONE" },
 						TelescopePromptNormal = { bg = "NONE" },
@@ -63,41 +67,23 @@ return {
 						TelescopePreviewNormal = { bg = "NONE" },
 						TelescopePreviewBorder = { bg = "NONE" },
 						TelescopePreviewTitle = { bg = "NONE" },
-
-						-- Float transparency
 						NormalFloat = { bg = "NONE" },
 						FloatBorder = { bg = "NONE" },
 						FloatTitle = { bg = "NONE" },
-
-						-- Popup menu transparency
 						Pmenu = { bg = "NONE" },
 						PmenuSel = { bg = colors.surface0 },
 						PmenuBorder = { bg = "NONE" },
-
-						-- LSP hover/signature transparency
 						LspInfoBorder = { bg = "NONE" },
-
-						-- Noice/notification transparency
 						NoicePopup = { bg = "NONE" },
 						NoicePopupBorder = { bg = "NONE" },
 						NoiceCmdlinePopup = { bg = "NONE" },
 						NoiceCmdlinePopupBorder = { bg = "NONE" },
-
-						-- Which-key transparency
 						WhichKeyFloat = { bg = "NONE" },
-
-						-- Neo-tree transparency
 						NeoTreeNormal = { bg = "NONE" },
 						NeoTreeNormalNC = { bg = "NONE" },
 						NeoTreeEndOfBuffer = { bg = "NONE" },
-
-						-- Notify transparency
 						NotifyBackground = { bg = "NONE" },
-
-						-- Mason transparency
 						MasonNormal = { bg = "NONE" },
-
-						-- Lazy transparency
 						LazyNormal = { bg = "NONE" },
 					}
 				end,
@@ -135,13 +121,8 @@ return {
 					mason = true,
 				},
 			})
-
 			vim.cmd.colorscheme("catppuccin")
-
-			-- Disable cursor line highlighting
 			vim.opt.cursorline = false
-
-			-- Disable LSP document highlight (word under cursor highlighting)
 			vim.api.nvim_create_autocmd("LspAttach", {
 				callback = function(args)
 					local client = vim.lsp.get_client_by_id(args.data.client_id)

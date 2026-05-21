@@ -287,16 +287,14 @@ return {
 				end,
 			})
 
-			vim.schedule(function()
-				local ok2, catppuccin = pcall(require, "catppuccin.palettes")
-				if ok2 then
-					local p = catppuccin.get_palette("frappe")
-					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextError", { fg = p.red, bg = "NONE" })
-					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextWarn", { fg = p.yellow, bg = "NONE" })
-					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextInfo", { fg = p.blue, bg = "NONE" })
-					vim.api.nvim_set_hl(0, "DiagnosticVirtualTextHint", { fg = p.teal, bg = "NONE" })
-				end
-			end)
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				group = vim.api.nvim_create_augroup("monochrome-overrides", { clear = true }),
+				callback = function()
+					if vim.g.colors_name and vim.g.colors_name:match("^koda") then
+						pcall(require("config.monochrome").apply)
+					end
+				end,
+			})
 		end,
 	},
 

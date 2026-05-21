@@ -10,8 +10,17 @@ _G.dd = function(...)
 end
 
 require("config.autocmds")
+require("config.options")
 require("config.lazy")
 
 require("config.theme").setup({
 	default = "koda",
+})
+
+vim.api.nvim_create_autocmd("UIEnter", {
+	once = true,
+	callback = function()
+		vim.opt.cursorline = false
+		vim.opt.cursorcolumn = false
+	end,
 })

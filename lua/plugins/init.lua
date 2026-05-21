@@ -1,8 +1,10 @@
 return {
+  { import = "plugins.alpha" },
   { import = "plugins.colorscheme" },
   { import = "plugins.fidget" },
   { import = "plugins.integrations" },
   { import = "plugins.kotlin" },
+  { import = "plugins.legendary" },
   { import = "plugins.local" },
   { import = "plugins.lsp" },
   { import = "plugins.neoconf" },

@@ -49,6 +49,12 @@ local function apply(name, opts)
 		return false
 	end
 
+	if name:match("^koda") then
+		pcall(require("config.monochrome").apply)
+	end
+	vim.opt.cursorline = false
+	vim.opt.cursorcolumn = false
+
 	if opts.persist ~= false then
 		persist(name)
 	end

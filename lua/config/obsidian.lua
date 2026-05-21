@@ -125,13 +125,13 @@ local function open_with_system(path)
 	vim.fn.jobstart({ "xdg-open", path }, { detach = true })
 end
 
-local function find_daily_template(workspaces)
+	local function find_daily_template(workspaces)
 	for _, workspace in ipairs(workspaces) do
 		if type(workspace.path) == "string" then
-			local template = vim.fs.joinpath(expand(workspace.path), "templates", "daily.md")
+			local template = vim.fs.joinpath(expand(workspace.path), "Extra", "Template", "journal.md")
 
 			if vim.fn.filereadable(template) == 1 then
-				return "daily.md"
+				return "Extra/Template/journal.md"
 			end
 		end
 	end
@@ -201,12 +201,13 @@ local function translate_obsidian_datetime_format(format)
 	return table.concat(chunks)
 end
 
-local function render_obsidian_datetime(format)
+local function render_obsidian_datetime(format, time)
+	time = time or os.time()
 	local strftime_format = translate_obsidian_datetime_format(format)
-	local rendered = os.date(strftime_format)
+	local rendered = os.date(strftime_format, time)
 
 	return rendered:gsub("__SALAR_OBSIDIAN_LOWER_AMPM__", function()
-		return os.date("%p"):lower()
+		return os.date("%p", time):lower()
 	end)
 end
 
@@ -224,11 +225,18 @@ function M.patch_template_substitutions()
 	local original = templates.substitute_template_variables
 
 	templates.substitute_template_variables = function(text, client, note)
+		local now = os.time()
 		text = text:gsub("{{date:([^}]+)}}", function(format)
-			return render_obsidian_datetime(format)
+			return render_obsidian_datetime(format, now)
 		end)
 		text = text:gsub("{{time:([^}]+)}}", function(format)
-			return render_obsidian_datetime(format)
+			return render_obsidian_datetime(format, now)
+		end)
+		text = text:gsub("{ date:([^}]+) }", function(format)
+			return render_obsidian_datetime(format, now)
+		end)
+		text = text:gsub("{ time:([^}]+) }", function(format)
+			return render_obsidian_datetime(format, now)
 		end)
 
 		return original(text, client, note)
@@ -277,11 +285,7 @@ function M.workspaces()
 	local workspaces = {
 		{
 			name = "personal",
-			path = env_or("OBSIDIAN_VAULT_PERSONAL", "~/vaults/personal"),
-		},
-		{
-			name = "work",
-			path = env_or("OBSIDIAN_VAULT_WORK", "~/vaults/work"),
+			path = env_or("OBSIDIAN_VAULT_PERSONAL", "~/Projects/Notes/Obsidian Vault"),
 		},
 	}
 
@@ -325,14 +329,13 @@ function M.opts()
 			min_chars = 2,
 		},
 		daily_notes = {
-			folder = "notes/dailies",
+			folder = "Journal",
 			date_format = "%Y-%m-%d",
 			alias_format = "%A, %B %-d, %Y",
 			default_tags = { "daily", "journal" },
-			template = find_daily_template(workspaces),
 		},
 		templates = {
-			folder = "templates",
+			folder = "Extra/Template",
 			date_format = "%Y-%m-%d",
 			time_format = "%H:%M",
 			substitutions = {
@@ -409,7 +412,11 @@ function M.opts()
 				return string.format("%s-", os.date("%Y%m%d-%H%M%S"))
 			end,
 		},
-		follow_url_func = open_with_system,
+		follow_url_func = function(url)
+			local bookshelf = require("config.bookshelf")
+			if bookshelf.follow_func(url) then return end
+			open_with_system(url)
+		end,
 		follow_img_func = open_with_system,
 		ui = {
 			enable = false,

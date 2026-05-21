@@ -133,6 +133,7 @@ return {
 			local fb_actions = telescope.extensions.file_browser.actions
 
 			opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
+				color_devicons = false,
 				wrap_results = true,
 				sorting_strategy = "ascending",
 				winblend = 0,
