@@ -1,0 +1,95 @@
+{
+    "Console Log": {
+        "prefix": "cl",
+        "body": "console.log(${1:var})",
+        "description": "Console log"
+    },
+    "Import": {
+        "prefix": "imp",
+        "body": "import { ${1:something} } from \"${2:module}\"",
+        "description": "Import statement"
+    },
+    "Default Import": {
+        "prefix": "imd",
+        "body": "import ${1:Name} from \"${2:module}\"",
+        "description": "Default import"
+    },
+    "Export Default": {
+        "prefix": "exd",
+        "body": "export default ${1:Name}",
+        "description": "Export default"
+    },
+    "Named Export": {
+        "prefix": "exn",
+        "body": "export { ${1:Name} }",
+        "description": "Named export"
+    },
+    "Arrow Function": {
+        "prefix": "afn",
+        "body": "const ${1:name} = (${2:args}): ${3:void} => {\n    $0\n}",
+        "description": "Arrow function"
+    },
+    "Async Arrow Function": {
+        "prefix": "aafn",
+        "body": "const ${1:name} = async (${2:args}): Promise<${3:void}> => {\n    $0\n}",
+        "description": "Async arrow function"
+    },
+    "Interface": {
+        "prefix": "iface",
+        "body": "interface ${1:Name} {\n    $0\n}",
+        "description": "TypeScript interface"
+    },
+    "Type": {
+        "prefix": "ty",
+        "body": "type ${1:Name} = ${2:string}",
+        "description": "TypeScript type alias"
+    },
+    "Enum": {
+        "prefix": "en",
+        "body": "enum ${1:Name} {\n    ${2:Variant} = \"${2:variant}\",\n}",
+        "description": "TypeScript enum"
+    },
+    "Generic Function": {
+        "prefix": "gfn",
+        "body": "function ${1:name}<${2:T}>(${3:arg}: ${2:T}): ${2:T} {\n    $0\n}",
+        "description": "Generic function"
+    },
+    "React Function Component": {
+        "prefix": "rfc",
+        "body": [
+            "interface ${1:Name}Props {",
+            "    $0",
+            "}",
+            "",
+            "export function ${1:Name}({ ${2:props} }: ${1:Name}Props) {",
+            "    return <${3:div}>${4:content}</${3:div}>",
+            "}"
+        ],
+        "description": "React Function Component"
+    },
+    "React useEffect": {
+        "prefix": "ue",
+        "body": "useEffect(() => {\n    $0\n}, [${1:deps}])",
+        "description": "React useEffect"
+    },
+    "React useState": {
+        "prefix": "us",
+        "body": "const [${1:state}, set${1:State}] = useState<${2:string}>(${3:initial})",
+        "description": "React useState"
+    },
+    "Describe Block": {
+        "prefix": "desc",
+        "body": "describe('${1:name}', () => {\n    $0\n})",
+        "description": "Jest describe"
+    },
+    "Test Case": {
+        "prefix": "it",
+        "body": "it('${1:should do something}', () => {\n    $0\n})",
+        "description": "Jest test case"
+    },
+    "Expect": {
+        "prefix": "exp",
+        "body": "expect(${1:actual}).${2:toEqual}(${3:expected})",
+        "description": "Jest expect"
+    }
+}

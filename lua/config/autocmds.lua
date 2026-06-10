@@ -1,52 +1,46 @@
-local lspconfig = require("lspconfig")
-local util = require("lspconfig.util")
+-- SourceKit-LSP is now managed by lspconfig in lua/plugins/lsp.lua
+-- xcodebuild.nvim handles xcode_build_server integration for build settings
 
-local function start_sourcekit(root_dir)
-	if not root_dir then
-		return
-	end
+-- Auto-reload buffers when changed externally (e.g. from Obsidian)
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+  callback = function()
+    vim.cmd("checktime")
+  end,
+})
 
-	-- Check if already running for this root
-	for _, client in ipairs(vim.lsp.get_clients()) do
-		if client.name == "sourcekit" and client.config.root_dir == root_dir then
-			return
-		end
-	end
+-- Per-filetype indentation
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {
+    "rust", "python", "py", "c", "cpp", "h", "hpp",
+    "swift", "kotlin", "java", "zig",
+  },
+  callback = function()
+    vim.bo.tabstop = 4
+    vim.bo.softtabstop = 4
+    vim.bo.shiftwidth = 4
+    vim.bo.expandtab = true
+  end,
+})
 
-	local cmd = vim.fn.trim(vim.fn.system("xcrun -f sourcekit-lsp 2>/dev/null"))
-	if cmd == "" then
-		cmd = "sourcekit-lsp"
-	end
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "go" },
+  callback = function()
+    vim.bo.tabstop = 4
+    vim.bo.shiftwidth = 4
+    vim.bo.softtabstop = 4
+    vim.bo.expandtab = false
+  end,
+})
 
-	vim.lsp.start({
-		name = "sourcekit",
-		cmd = { cmd },
-		root_dir = root_dir,
-		capabilities = vim.lsp.protocol.make_client_capabilities(),
-		on_init = function(client)
-			client.offset_encoding = "utf-8"
-		end,
-	})
-end
-
-local function attach_swift(bufnr)
-	local fname = vim.api.nvim_buf_get_name(bufnr)
-	if fname == "" then
-		return
-	end
-
-	local root = util.root_pattern("Package.swift", ".xcodeproj", ".xcworkspace", ".git")(fname)
-
-	start_sourcekit(root)
-
-	vim.defer_fn(function()
-		vim.lsp.buf_attach_client(bufnr, vim.lsp.get_clients({ name = "sourcekit" })[1].id)
-	end, 300)
-end
-
-vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-	pattern = "*.swift",
-	callback = function(ev)
-		attach_swift(ev.buf)
-	end,
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {
+    "yaml", "yml", "typst",
+  },
+  callback = function()
+    vim.bo.tabstop = 2
+    vim.bo.softtabstop = 2
+    vim.bo.shiftwidth = 2
+    vim.bo.expandtab = true
+  end,
 })

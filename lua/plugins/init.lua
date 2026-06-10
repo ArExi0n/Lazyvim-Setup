@@ -1,6 +1,7 @@
 return {
   { import = "plugins.alpha" },
   { import = "plugins.colorscheme" },
+  { import = "plugins.cpp" },
   { import = "plugins.fidget" },
   { import = "plugins.integrations" },
   { import = "plugins.kotlin" },

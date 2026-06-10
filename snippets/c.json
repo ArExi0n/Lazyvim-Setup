@@ -1,0 +1,62 @@
+{
+    "Include": {
+        "prefix": "inc",
+        "body": "#include <${1:stdio.h}>",
+        "description": "Include header"
+    },
+    "Local Include": {
+        "prefix": "incl",
+        "body": "#include \"${1:header.h}\"",
+        "description": "Local include"
+    },
+    "Function": {
+        "prefix": "fn",
+        "body": "${1:int} ${2:name}(${3:void}) {\n    $0\n}",
+        "description": "Function definition"
+    },
+    "Main": {
+        "prefix": "main",
+        "body": "int main(${1:int argc, char *argv[]}) {\n    $0\n    return 0;\n}",
+        "description": "Main function"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": "for (${1:int i = 0}; ${1:i} < ${2:n}; ${1:i}++) {\n    $0\n}",
+        "description": "For loop"
+    },
+    "While": {
+        "prefix": "while",
+        "body": "while (${1:cond}) {\n    $0\n}",
+        "description": "While loop"
+    },
+    "Struct": {
+        "prefix": "st",
+        "body": "typedef struct {\n    $0\n} ${1:Name};",
+        "description": "C struct typedef"
+    },
+    "If": {
+        "prefix": "if",
+        "body": "if (${1:cond}) {\n    $0\n}",
+        "description": "If statement"
+    },
+    "Printf": {
+        "prefix": "pf",
+        "body": "printf(\"${1:%s}\\n\", ${2:var});",
+        "description": "Printf"
+    },
+    "Sizeof": {
+        "prefix": "sz",
+        "body": "sizeof(${1:type})",
+        "description": "Sizeof"
+    },
+    "Malloc": {
+        "prefix": "mal",
+        "body": "${1:ptr} = malloc(sizeof(${2:type}) * ${3:count});\nif (!${1:ptr}) { return ${4:NULL}; }",
+        "description": "Malloc with check"
+    },
+    "Enum": {
+        "prefix": "en",
+        "body": "typedef enum {\n    $0\n} ${1:Name};",
+        "description": "C enum typedef"
+    }
+}

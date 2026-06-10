@@ -1,0 +1,123 @@
+{
+    "Struct": {
+        "prefix": "st",
+        "body": [
+            "#[derive(Debug, Clone)]",
+            "pub struct ${1:Name} {",
+            "    $0",
+            "}"
+        ],
+        "description": "Rust struct template"
+    },
+    "Enum": {
+        "prefix": "en",
+        "body": [
+            "#[derive(Debug, Clone)]",
+            "pub enum ${1:Name} {",
+            "    ${2:Variant},",
+            "}"
+        ],
+        "description": "Rust enum template"
+    },
+    "Impl Block": {
+        "prefix": "imp",
+        "body": [
+            "impl ${1:Name} {",
+            "    pub fn new() -> Self {",
+            "        Self {",
+            "            $0",
+            "        }",
+            "    }",
+            "}"
+        ],
+        "description": "Rust impl block"
+    },
+    "Async Function": {
+        "prefix": "afn",
+        "body": [
+            "pub async fn ${1:name}() -> anyhow::Result<()> {",
+            "    $0",
+            "    Ok(())",
+            "}"
+        ],
+        "description": "Rust async function"
+    },
+    "Tokio Main": {
+        "prefix": "tm",
+        "body": [
+            "#[tokio::main]",
+            "async fn main() -> anyhow::Result<()> {",
+            "    $0",
+            "    Ok(())",
+            "}"
+        ],
+        "description": "Tokio async main"
+    },
+    "Test Module": {
+        "prefix": "test",
+        "body": [
+            "#[cfg(test)]",
+            "mod tests {",
+            "    use super::*;",
+            "",
+            "    #[test]",
+            "    fn test_${1:name}() {",
+            "        $0",
+            "    }",
+            "}"
+        ],
+        "description": "Rust test module"
+    },
+    "Derive": {
+        "prefix": "der",
+        "body": "#[derive(${1:Debug, Clone})]",
+        "description": "Rust derive attribute"
+    },
+    "Error Type": {
+        "prefix": "err",
+        "body": [
+            "#[derive(Debug, thiserror::Error)]",
+            "pub enum ${1:Error} {",
+            "    #[error(\"$2\")]",
+            "    ${3:Variant}(${4:#[from] }${5:source}),",
+            "}"
+        ],
+        "description": "Rust thiserror enum"
+    },
+    "Result Type": {
+        "prefix": "res",
+        "body": "pub type Result<T> = std::result::Result<T, ${1:Error}>;",
+        "description": "Rust Result type alias"
+    },
+    "Match": {
+        "prefix": "mch",
+        "body": [
+            "match ${1:expr} {",
+            "    ${2:Pattern} => {",
+            "        $0",
+            "    }",
+            "}"
+        ],
+        "description": "Rust match expression"
+    },
+    "Let Some": {
+        "prefix": "ls",
+        "body": "let Some(${1:var}) = ${2:option}${3: else { $0 }};",
+        "description": "Rust let Some destructuring"
+    },
+    "Let Ok": {
+        "prefix": "lo",
+        "body": "let Ok(${1:var}) = ${2:result}${3: else { $0 }};",
+        "description": "Rust let Ok destructuring"
+    },
+    "Clone": {
+        "prefix": "clone",
+        "body": "#[derive(Debug, Clone, Copy, PartialEq, Eq)]",
+        "description": "Rust common derives"
+    },
+    "Println": {
+        "prefix": "pln",
+        "body": "println!(\"${1:}: {:?}\", ${2:var});",
+        "description": "Rust debug print"
+    }
+}

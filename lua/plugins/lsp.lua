@@ -18,10 +18,39 @@ return {
 				"swiftlint",
 				"luacheck",
 				"shellcheck",
-				"shfmt",
-				"stylua",
 				"prettier",
+				"clangd",
+				"xcode-build-server",
 			})
+		end,
+		config = function(_, opts)
+			require("mason").setup(opts)
+			local mr = require("mason-registry")
+			mr:on("package:install:success", function()
+				vim.defer_fn(function()
+					require("lazy.core.handler.event").trigger({
+						event = "FileType",
+						buf = vim.api.nvim_get_current_buf(),
+					})
+				end, 100)
+			end)
+			mr.refresh(function()
+				local function install_tools(idx)
+					if idx > #opts.ensure_installed then return end
+					local p = mr.get_package(opts.ensure_installed[idx])
+					if not p:is_installed() then
+						local ok, err = pcall(p.install, p)
+						if not ok then
+							vim.schedule(function()
+								install_tools(idx + 1)
+							end)
+						end
+					else
+						install_tools(idx + 1)
+					end
+				end
+				install_tools(1)
+			end)
 		end,
 	},
 
@@ -105,12 +134,19 @@ return {
 					cmd = { vim.trim(vim.fn.system("xcrun -f sourcekit-lsp")) },
 					filetypes = { "swift", "objc", "objcpp" },
 					root_dir = function(filename)
-						return require("lspconfig.util").root_pattern(
-							"Package.swift",
-							".git",
-							"*.xcodeproj",
-							"*.xcworkspace"
-						)(filename)
+						local util = require("lspconfig.util")
+						local root = util.root_pattern("buildServer.json", "Package.swift")(filename)
+						if root then return root end
+						local dir = vim.fs.dirname(filename)
+						while dir and dir ~= "/" do
+							for entry, type in vim.fs.dir(dir) do
+								if type == "directory" and (entry:find("%.xcodeproj$") or entry:find("%.xcworkspace$")) then
+									return dir
+								end
+							end
+							dir = vim.fs.dirname(dir)
+						end
+						return util.root_pattern(".git")(filename)
 					end,
 					on_attach = function(_, bufnr)
 						vim.bo[bufnr].tabstop = 4
@@ -180,9 +216,18 @@ return {
 					autostart = true,
 					settings = {
 						["rust-analyzer"] = {
-							cargo = { allFeatures = true, loadOutDirsFromCheck = true },
-							checkOnSave = { command = "clippy", allFeatures = true },
+							cargo = {
+								allFeatures = false,
+								loadOutDirsFromCheck = true,
+								buildScripts = { enable = true },
+							},
+							checkOnSave = { command = "check", allFeatures = false },
 							procMacro = { enable = true },
+							completion = { callable = { snippets = "fill_arguments" } },
+							imports = {
+								merge = { glob = true },
+								preferNoStd = false,
+							},
 						},
 					},
 				},
@@ -195,6 +240,18 @@ return {
 							staticcheck = true,
 							gofumpt = true,
 						},
+					},
+				},
+
+				clangd = {
+					autostart = true,
+					cmd = {
+				"clangd",
+				"xcode-build-server",
+						"--background-index",
+						"--clang-tidy",
+						"--header-insertion=iwyu",
+						"--completion-style=detailed",
 					},
 				},
 
@@ -227,16 +284,45 @@ return {
 			require("mason-lspconfig").setup({
 				ensure_installed = ensure_installed,
 				automatic_installation = true,
+				handlers = {
+					function(server_name)
+						local server_opts = opts.servers[server_name] or {}
+						server_opts.capabilities =
+							vim.tbl_deep_extend("force", {}, capabilities, server_opts.capabilities or {})
+						require("lspconfig")[server_name].setup(server_opts)
+					end,
+				},
 			})
 
-			require("mason-lspconfig").setup_handlers({
-				function(server_name)
-					local server_opts = opts.servers[server_name] or {}
-					server_opts.capabilities =
-						vim.tbl_deep_extend("force", {}, capabilities, server_opts.capabilities or {})
-					require("lspconfig")[server_name].setup(server_opts)
-				end,
+			local sk_opts = vim.tbl_deep_extend("force", opts.servers.sourcekit or {}, {
+				capabilities = capabilities,
 			})
+			require("lspconfig").sourcekit.setup(sk_opts)
+
+			vim.api.nvim_create_user_command("SourcekitRestart", function()
+				for _, client in ipairs(vim.lsp.get_clients({ name = "sourcekit" })) do
+					client:stop()
+					vim.notify("sourcekit-lsp stopped, will restart on next Swift file open")
+				end
+				if vim.fn.executable("xcode-build-server") == 1 then
+					vim.fn.jobstart({ "xcode-build-server", "config", "-overwrite" })
+				end
+			end, { desc = "Restart sourcekit-lsp and regenerate buildServer.json" })
+
+			vim.api.nvim_create_user_command("SourcekitStatus", function()
+				local clients = vim.lsp.get_clients({ name = "sourcekit" })
+				if #clients == 0 then
+					vim.notify("sourcekit-lsp: NOT running", vim.log.levels.WARN)
+					return
+				end
+				local c = clients[1]
+				local root = c.config.root_dir or "N/A"
+				local has_build_server = vim.fn.filereadable(root .. "/buildServer.json") == 1
+				vim.notify(string.format(
+					"sourcekit-lsp: running\n  Root: %s\n  buildServer.json: %s",
+					root, has_build_server and "yes" or "no"
+				))
+			end, { desc = "Check sourcekit-lsp status" })
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
@@ -263,13 +349,26 @@ return {
 					end, "LSP: Line diagnostics")
 					map("n", "[d", vim.diagnostic.goto_prev, "LSP: Previous diagnostic")
 					map("n", "]d", vim.diagnostic.goto_next, "LSP: Next diagnostic")
-					map("n", "<leader>vca", vim.lsp.buf.code_action, "LSP: Code action")
-					map("n", "<leader>vrr", vim.lsp.buf.references, "LSP: References")
+				map("n", "<leader>vca", vim.lsp.buf.code_action, "LSP: Code action")
+				map("n", "<leader>vi", function()
+					vim.lsp.buf.code_action({
+						context = {
+							only = { "source.organizeImports", "source.addMissingImports", "source.fixAll" },
+						},
+						apply = true,
+					})
+				end, "LSP: Fix imports")
+				map("n", "<leader>vrr", vim.lsp.buf.references, "LSP: References")
 					map("n", "<leader>vrn", vim.lsp.buf.rename, "LSP: Rename")
 					map("i", "<C-h>", vim.lsp.buf.signature_help, "LSP: Signature help")
 					map("n", "<leader>f", function()
 						vim.lsp.buf.format({ async = true })
 					end, "LSP: Format")
+
+					local sk = vim.lsp.get_clients({ bufnr = bufnr, name = "sourcekit" })
+					if #sk > 0 then
+						map("n", "<leader>xr", ":SourcekitRestart<CR>", "sourcekit-lsp: Restart")
+					end
 
 					vim.api.nvim_create_autocmd("CursorHold", {
 						buffer = bufnr,
@@ -336,6 +435,8 @@ return {
 				html = { "prettier" },
 				css = { "prettier" },
 				rust = { "rustfmt" },
+				cpp = { "clang-format" },
+				c = { "clang-format" },
 				swift = { "swiftformat" },
 			},
 			format_on_save = {

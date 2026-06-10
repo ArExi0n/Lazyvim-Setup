@@ -1,0 +1,72 @@
+{
+    "Shebang": {
+        "prefix": "shb",
+        "body": "#!/bin/bash\nset -euo pipefail\nIFS=$'\\n\\t'",
+        "description": "Bash shebang with strict mode"
+    },
+    "Function": {
+        "prefix": "fn",
+        "body": "${1:name}() {\n    $0\n}",
+        "description": "Bash function"
+    },
+    "If": {
+        "prefix": "if",
+        "body": "if [[ ${1:cond} ]]; then\n    $0\nfi",
+        "description": "If statement"
+    },
+    "If Else": {
+        "prefix": "ife",
+        "body": "if [[ ${1:cond} ]]; then\n    $0\nelse\n    ${2:}\nfi",
+        "description": "If else"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": "for ${1:item} in ${2:list}; do\n    $0\ndone",
+        "description": "For loop"
+    },
+    "While": {
+        "prefix": "while",
+        "body": "while ${1:cond}; do\n    $0\ndone",
+        "description": "While loop"
+    },
+    "Case": {
+        "prefix": "case",
+        "body": "case ${1:var} in\n    ${2:pattern})\n        $0\n        ;;\nesac",
+        "description": "Case statement"
+    },
+    "Var": {
+        "prefix": "var",
+        "body": "${1:name}=\"${2:value}\"",
+        "description": "Variable assignment"
+    },
+    "Read": {
+        "prefix": "read",
+        "body": "read -r ${1:var}",
+        "description": "Read input"
+    },
+    "Print": {
+        "prefix": "pr",
+        "body": "echo \"${1:message}\"",
+        "description": "Echo print"
+    },
+    "Error Check": {
+        "prefix": "err",
+        "body": "if [[ $? -ne 0 ]]; then\n    echo \"Error: $1\"\n    exit 1\nfi",
+        "description": "Error check"
+    },
+    "Trap": {
+        "prefix": "trap",
+        "body": "trap '${1:cleanup}' EXIT",
+        "description": "Exit trap"
+    },
+    "Subshell": {
+        "prefix": "sub",
+        "body": "$(\n    $0\n)",
+        "description": "Command substitution"
+    },
+    "Here Document": {
+        "prefix": "heredoc",
+        "body": "cat << ${1:EOF}\n$0\n${1:EOF}",
+        "description": "Here document"
+    }
+}

@@ -1,0 +1,87 @@
+{
+    "Struct": {
+        "prefix": "st",
+        "body": "struct ${1:Name} {\n    $0\n}",
+        "description": "Swift struct"
+    },
+    "Class": {
+        "prefix": "cls",
+        "body": "class ${1:Name} {\n    $0\n}",
+        "description": "Swift class"
+    },
+    "Enum": {
+        "prefix": "en",
+        "body": "enum ${1:Name} {\n    case ${2:value}\n}",
+        "description": "Swift enum"
+    },
+    "Function": {
+        "prefix": "fn",
+        "body": "func ${1:name}(${2:args}) ${3:-> ReturnType} {\n    $0\n}",
+        "description": "Swift function"
+    },
+    "Async Function": {
+        "prefix": "afn",
+        "body": "func ${1:name}(${2:args}) async ${3:throws} ${4:-> ReturnType} {\n    $0\n}",
+        "description": "Swift async function"
+    },
+    "Protocol": {
+        "prefix": "prot",
+        "body": "protocol ${1:Name} {\n    $0\n}",
+        "description": "Swift protocol"
+    },
+    "Extension": {
+        "prefix": "ext",
+        "body": "extension ${1:Name} {\n    $0\n}",
+        "description": "Swift extension"
+    },
+    "Init": {
+        "prefix": "init",
+        "body": "init(${1:args}) {\n    $0\n}",
+        "description": "Swift initializer"
+    },
+    "Guard Let": {
+        "prefix": "guard",
+        "body": "guard let ${1:value} = ${2:optional} else { ${3:return} }",
+        "description": "Swift guard let"
+    },
+    "If Let": {
+        "prefix": "iflet",
+        "body": "if let ${1:value} = ${2:optional} {\n    $0\n}",
+        "description": "Swift if let"
+    },
+    "For In": {
+        "prefix": "for",
+        "body": "for ${1:item} in ${2:collection} {\n    $0\n}",
+        "description": "Swift for-in loop"
+    },
+    "Print": {
+        "prefix": "pr",
+        "body": "print(\"\\(${1:var})\")",
+        "description": "Swift print"
+    },
+    "Test": {
+        "prefix": "test",
+        "body": "func test${1:Name}() ${2:throws} {\n    $0\n}",
+        "description": "Swift test"
+    },
+    "XCTest Case": {
+        "prefix": "xtest",
+        "body": "import XCTest\n\nfinal class ${1:Name}Tests: XCTestCase {\n    func test${1:Name}() throws {\n        $0\n    }\n}",
+        "description": "XCTest test class"
+    },
+    "Codable": {
+        "prefix": "cod",
+        "body": "struct ${1:Name}: Codable {\n    let ${2:property}: ${3:String}\n}",
+        "description": "Codable struct"
+    },
+    "Observable Class": {
+        "prefix": "obs",
+        "body": "@Observable\nclass ${1:Name} {\n    var ${2:property}: ${3:String} = \"${4:value}\"\n}",
+        "description": "Swift Observable class"
+    },
+    "View": {
+        "prefix": "view",
+        "body": "import SwiftUI\n\nstruct ${1:Name}: View {\n    var body: some View {\n        ${2:Text(\"Hello, World!\")}\n    }\n}",
+        "description": "SwiftUI View"
+    }
+}

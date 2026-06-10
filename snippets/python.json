@@ -1,0 +1,97 @@
+{
+    "Function": {
+        "prefix": "fn",
+        "body": "def ${1:name}(${2:args}):\n    $0",
+        "description": "Function definition"
+    },
+    "Async Function": {
+        "prefix": "afn",
+        "body": "async def ${1:name}(${2:args}):\n    $0",
+        "description": "Async function"
+    },
+    "Class": {
+        "prefix": "cls",
+        "body": "class ${1:Name}:${2:object}\n    def __init__(self, ${3:args}):\n        $0",
+        "description": "Class definition"
+    },
+    "If Main": {
+        "prefix": "main",
+        "body": "if __name__ == \"__main__\":\n    $0",
+        "description": "If main guard"
+    },
+    "Test Function": {
+        "prefix": "test",
+        "body": "def test_${1:name}():$2\n    $0",
+        "description": "Test function"
+    },
+    "Async Test": {
+        "prefix": "atest",
+        "body": "async def test_${1:name}():$2\n    $0",
+        "description": "Async test function"
+    },
+    "Print": {
+        "prefix": "pr",
+        "body": "print(${1:var})",
+        "description": "Print"
+    },
+    "Import": {
+        "prefix": "imp",
+        "body": "import ${1:module}",
+        "description": "Import"
+    },
+    "From Import": {
+        "prefix": "fimp",
+        "body": "from ${1:module} import ${2:name}",
+        "description": "From import"
+    },
+    "List Comprehension": {
+        "prefix": "lc",
+        "body": "[${1:expr} for ${2:item} in ${3:iterable}]",
+        "description": "List comprehension"
+    },
+    "Dict Comprehension": {
+        "prefix": "dc",
+        "body": "{${1:key}: ${2:value} for ${3:item} in ${4:iterable}}",
+        "description": "Dict comprehension"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": "for ${1:item} in ${2:iterable}:\n    $0",
+        "description": "For loop"
+    },
+    "If Statement": {
+        "prefix": "if",
+        "body": "if ${1:cond}:\n    $0",
+        "description": "If statement"
+    },
+    "Try Except": {
+        "prefix": "try",
+        "body": "try:\n    $0\nexcept ${1:Exception} as ${2:e}:\n    ${3:pass}",
+        "description": "Try except"
+    },
+    "Async With": {
+        "prefix": "aw",
+        "body": "async with ${1:ctx}:\n    $0",
+        "description": "Async context manager"
+    },
+    "Type Hint": {
+        "prefix": "th",
+        "body": "${1:var}: ${2:type} = ${3:value}",
+        "description": "Type hint annotation"
+    },
+    "Dataclass": {
+        "prefix": "dccl",
+        "body": "@dataclass\nclass ${1:Name}:\n    ${2:field}: ${3:type}\n    $0",
+        "description": "Python dataclass"
+    },
+    "Pydantic Model": {
+        "prefix": "pyd",
+        "body": "class ${1:Name}(BaseModel):\n    ${2:field}: ${3:str}\n    $0",
+        "description": "Pydantic model"
+    },
+    "Fixture": {
+        "prefix": "fix",
+        "body": "@pytest.fixture\ndef ${1:name}():$2\n    $0",
+        "description": "Pytest fixture"
+    }
+}

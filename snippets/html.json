@@ -1,0 +1,74 @@
+{
+    "HTML5 Boilerplate": {
+        "prefix": "html",
+        "body": [
+            "<!DOCTYPE html>",
+            "<html lang=\"${1:en}\">",
+            "<head>",
+            "    <meta charset=\"UTF-8\">",
+            "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+            "    <title>${2:Document}</title>",
+            "</head>",
+            "<body>",
+            "    $0",
+            "</body>",
+            "</html>"
+        ],
+        "description": "HTML5 boilerplate"
+    },
+    "Div": {
+        "prefix": "div",
+        "body": "<div ${1:class=\"${2:name}\"}>$0</div>",
+        "description": "Div element"
+    },
+    "Script Tag": {
+        "prefix": "script",
+        "body": "<script>${1:\n    $0\n}</script>",
+        "description": "Script tag"
+    },
+    "Script Src": {
+        "prefix": "scriptsrc",
+        "body": "<script src=\"${1:file.js}\"></script>",
+        "description": "Script src"
+    },
+    "Link CSS": {
+        "prefix": "link",
+        "body": "<link rel=\"stylesheet\" href=\"${1:style.css}\">",
+        "description": "Link stylesheet"
+    },
+    "Anchor": {
+        "prefix": "a",
+        "body": "<a href=\"${1:#}\">${2:link}</a>",
+        "description": "Anchor link"
+    },
+    "Image": {
+        "prefix": "img",
+        "body": "<img src=\"${1:image.jpg}\" alt=\"${2:description}\">",
+        "description": "Image tag"
+    },
+    "Form": {
+        "prefix": "form",
+        "body": "<form action=\"${1:/submit}\" method=\"${2:POST}\">\n    $0\n</form>",
+        "description": "Form"
+    },
+    "Input": {
+        "prefix": "input",
+        "body": "<input type=\"${1:text}\" name=\"${2:name}\" ${3:required}>",
+        "description": "Input field"
+    },
+    "Button": {
+        "prefix": "btn",
+        "body": "<button ${1:type=\"button\"}>${2:Click}</button>",
+        "description": "Button"
+    },
+    "Unordered List": {
+        "prefix": "ul",
+        "body": "<ul>\n    <li>$0</li>\n</ul>",
+        "description": "Unordered list"
+    },
+    "Meta Viewport": {
+        "prefix": "meta",
+        "body": "<meta name=\"${1:viewport}\" content=\"${2:width=device-width, initial-scale=1.0}\">",
+        "description": "Meta tag"
+    }
+}

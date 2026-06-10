@@ -1,0 +1,116 @@
+{
+    "Error Check": {
+        "prefix": "err",
+        "body": "if err != nil {\n    return ${1:err}\n}",
+        "description": "Go error check"
+    },
+    "Errorf": {
+        "prefix": "errf",
+        "body": "return fmt.Errorf(\"${1:context}: %w\", ${2:err})",
+        "description": "Go wrapped error"
+    },
+    "Function": {
+        "prefix": "fn",
+        "body": "func ${1:name}(${2:args}) ${3:error} {\n    $0\n}",
+        "description": "Go function"
+    },
+    "Method": {
+        "prefix": "meth",
+        "body": "func (${1:receiver} *${2:Type}) ${3:name}(${4:args}) ${5:error} {\n    $0\n}",
+        "description": "Go method"
+    },
+    "Struct": {
+        "prefix": "st",
+        "body": "type ${1:Name} struct {\n    $0\n}",
+        "description": "Go struct"
+    },
+    "Interface": {
+        "prefix": "iface",
+        "body": "type ${1:Name} interface {\n    $0\n}",
+        "description": "Go interface"
+    },
+    "Test": {
+        "prefix": "test",
+        "body": "func Test${1:Name}(t *testing.T) {\n    $0\n}",
+        "description": "Go test"
+    },
+    "Table Test": {
+        "prefix": "tt",
+        "body": [
+            "func Test${1:Name}(t *testing.T) {",
+            "\tt.Parallel()",
+            "",
+            "\ttests := []struct {",
+            "\t\tname    string",
+            "\t\t${2:input}  ${3:string}",
+            "\t\twant    ${4:string}",
+            "\t\twantErr bool",
+            "\t}{",
+            "\t\t{",
+            "\t\t\tname: \"${5:basic case}\",",
+            "\t\t\t${2:input}: ${6:value},",
+            "\t\t\twant: ${7:expected},",
+            "\t\t},",
+            "\t}",
+            "",
+            "\tfor _, tt := range tests {",
+            "\t\tt.Run(tt.name, func(t *testing.T) {",
+            "\t\t\tgot, err := ${8:Function}(tt.${2:input})",
+            "\t\t\tif (err != nil) != tt.wantErr {",
+            "\t\t\t\tt.Errorf(\"${8:Function}() error = %v, wantErr %v\", err, tt.wantErr)",
+            "\t\t\t\treturn",
+            "\t\t\t}",
+            "\t\t\tif !reflect.DeepEqual(got, tt.want) {",
+            "\t\t\t\tt.Errorf(\"${8:Function}() = %v, want %v\", got, tt.want)",
+            "\t\t\t}",
+            "\t\t})",
+            "\t}",
+            "}"
+        ],
+        "description": "Go table-driven test"
+    },
+    "Select": {
+        "prefix": "sel",
+        "body": "select {\ncase <-${1:ch}:\n    $0\n}",
+        "description": "Go select"
+    },
+    "Goroutine": {
+        "prefix": "go",
+        "body": "go func() {\n    $0\n}()",
+        "description": "Go goroutine"
+    },
+    "Channel": {
+        "prefix": "ch",
+        "body": "${1:ch} := make(chan ${2:T}, ${3:0})",
+        "description": "Go channel"
+    },
+    "HTTP Handler": {
+        "prefix": "http",
+        "body": [
+            "http.HandleFunc(\"${1:GET} ${2:/path}\", func(w http.ResponseWriter, r *http.Request) {",
+            "    $0",
+            "})"
+        ],
+        "description": "Go HTTP handler"
+    },
+    "JSON Marshal": {
+        "prefix": "jm",
+        "body": "${1:data}, err := json.Marshal(${2:v})",
+        "description": "Go JSON marshal"
+    },
+    "JSON Unmarshal": {
+        "prefix": "ju",
+        "body": "err := json.Unmarshal(${1:data}, &${2:v})",
+        "description": "Go JSON unmarshal"
+    },
+    "Init": {
+        "prefix": "init",
+        "body": "func init() {\n    $0\n}",
+        "description": "Go init function"
+    },
+    "Main": {
+        "prefix": "main",
+        "body": "func main() {\n    $0\n}",
+        "description": "Go main function"
+    }
+}

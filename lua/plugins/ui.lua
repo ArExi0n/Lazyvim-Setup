@@ -145,87 +145,13 @@ return {
 		end,
 		keys = {
 			{
-
 				"<leader>d",
-				"<cmd>NvimTreeClose<cr><cmd>tabnew<cr><bar><bar><cmd>DBUI<cr>",
+				"<cmd>tabnew<cr><bar><bar><cmd>DBUI<cr>",
 			},
 		},
 	},
 	{
 		"nvim-tree/nvim-tree.lua",
-		config = function()
-			require("nvim-tree").setup({
-				on_attach = function(bufnr)
-					local api = require("nvim-tree.api")
-
-					local function opts(desc)
-						return {
-							desc = "nvim-tree: " .. desc,
-							buffer = bufnr,
-							noremap = true,
-							silent = true,
-							nowait = true,
-						}
-					end
-
-					-- default mappings
-					api.config.mappings.default_on_attach(bufnr)
-
-					-- custom mappings
-					vim.keymap.set("n", "t", api.node.open.tab, opts("Tab"))
-				end,
-				actions = {
-					open_file = {
-						quit_on_open = true,
-					},
-				},
-				sort = {
-					sorter = "case_sensitive",
-				},
-				view = {
-					width = 30,
-					relativenumber = true,
-				},
-				renderer = {
-					group_empty = true,
-					highlight_git = false,
-					full_name = true,
-					symlink_destination = false,
-					indent_markers = {
-						enable = false,
-					},
-					icons = {
-						show = {
-							file = true,
-							folder = true,
-							folder_arrow = false,
-							git = false,
-						},
-						web_devicons = {
-							file = { enable = true, color = false },
-							folder = { enable = true, color = false },
-						},
-					},
-				},
-				filters = {
-					dotfiles = true,
-					custom = {
-						"node_modules/.*",
-					},
-				},
-				diagnostics = {
-					enable = false,
-					show_on_dirs = false,
-				},
-				git = {
-					enable = false,
-					show_on_dirs = false,
-				},
-			})
-
-			if vim.fn.argc(-1) == 0 then
-				vim.cmd("NvimTreeFocus")
-			end
-		end,
+		enabled = false,
 	},
 }

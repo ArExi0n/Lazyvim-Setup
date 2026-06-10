@@ -1,0 +1,27 @@
+{
+    "Object": {
+        "prefix": "obj",
+        "body": "{\n    \"${1:key}\": ${2:value},\n    $0\n}",
+        "description": "JSON object"
+    },
+    "Array": {
+        "prefix": "arr",
+        "body": "[\n    $0\n]",
+        "description": "JSON array"
+    },
+    "Property": {
+        "prefix": "prop",
+        "body": "\"${1:key}\": \"${2:value}\"",
+        "description": "JSON property"
+    },
+    "String Array": {
+        "prefix": "sarr",
+        "body": "[\n    \"${1:value}\",\n    $0\n]",
+        "description": "JSON string array"
+    },
+    "Object Array": {
+        "prefix": "oarr",
+        "body": "[\n    {\n        \"${1:key}\": ${2:value},\n        $0\n    }\n]",
+        "description": "JSON object array"
+    }
+}

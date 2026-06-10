@@ -1,0 +1,52 @@
+{
+    "Todo": {
+        "prefix": "todo",
+        "body": "TODO(${1:ansh}): $0",
+        "description": "Todo comment"
+    },
+    "Fixme": {
+        "prefix": "fixme",
+        "body": "FIXME: $0",
+        "description": "Fixme comment"
+    },
+    "Hack": {
+        "prefix": "hack",
+        "body": "HACK: $0",
+        "description": "Hack comment"
+    },
+    "Note": {
+        "prefix": "note",
+        "body": "NOTE: $0",
+        "description": "Note comment"
+    },
+    "Log Debug": {
+        "prefix": "logd",
+        "body": "log::debug!(\"${1:message}\");",
+        "description": "Log debug statement"
+    },
+    "Log Info": {
+        "prefix": "logi",
+        "body": "log::info!(\"${1:message}\");",
+        "description": "Log info statement"
+    },
+    "Log Error": {
+        "prefix": "loge",
+        "body": "log::error!(\"${1:message}\");",
+        "description": "Log error statement"
+    },
+    "Log Warn": {
+        "prefix": "logw",
+        "body": "log::warn!(\"${1:message}\");",
+        "description": "Log warn statement"
+    },
+    "Date": {
+        "prefix": "date",
+        "body": "$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+        "description": "Current date"
+    },
+    "Timestamp": {
+        "prefix": "ts",
+        "body": "$CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE $CURRENT_HOUR:$CURRENT_MINUTE:$CURRENT_SECOND",
+        "description": "Current timestamp"
+    }
+}

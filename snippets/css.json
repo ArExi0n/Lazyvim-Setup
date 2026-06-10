@@ -1,0 +1,42 @@
+{
+    "Flexbox": {
+        "prefix": "flex",
+        "body": "display: flex;\njustify-content: ${1:center};\nalign-items: ${2:center};",
+        "description": "CSS flexbox center"
+    },
+    "Grid": {
+        "prefix": "grid",
+        "body": "display: grid;\ngrid-template-columns: ${1:repeat(3, 1fr)};\ngap: ${2:1rem};",
+        "description": "CSS grid"
+    },
+    "Media Query": {
+        "prefix": "mq",
+        "body": "@media (${1:min-width}: ${2:768px}) {\n    $0\n}",
+        "description": "CSS media query"
+    },
+    "Keyframes": {
+        "prefix": "kf",
+        "body": "@keyframes ${1:name} {\n    from { $2 }\n    to { $0 }\n}",
+        "description": "CSS keyframes"
+    },
+    "Position Absolute": {
+        "prefix": "posa",
+        "body": "position: absolute;\ntop: ${1:0};\nright: ${2:0};\nbottom: ${3:auto};\nleft: ${4:auto};",
+        "description": "CSS position absolute"
+    },
+    "Position Relative": {
+        "prefix": "posr",
+        "body": "position: relative;",
+        "description": "CSS position relative"
+    },
+    "Transition": {
+        "prefix": "trans",
+        "body": "transition: ${1:all} ${2:0.3s} ${3:ease};",
+        "description": "CSS transition"
+    },
+    "Transform Center": {
+        "prefix": "tc",
+        "body": "position: absolute;\ntop: 50%;\nleft: 50%;\ntransform: translate(-50%, -50%);",
+        "description": "CSS absolute center"
+    }
+}

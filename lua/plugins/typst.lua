@@ -14,6 +14,7 @@ return {
 				tinymist = {
 					autostart = true,
 					settings = {
+						defaultEntryFile = "",
 						exportPdf = "onSave",
 						outputPath = "$root/$name",
 						formatterMode = "typstyle",

@@ -1,0 +1,82 @@
+{
+    "Include": {
+        "prefix": "inc",
+        "body": "#include <${1:iostream}>",
+        "description": "C++ include"
+    },
+    "Class": {
+        "prefix": "cls",
+        "body": "class ${1:Name} {\npublic:\n    ${1:Name}() = default;\n    ~${1:Name}() = default;\n\nprivate:\n    $0\n};",
+        "description": "C++ class"
+    },
+    "Struct": {
+        "prefix": "st",
+        "body": "struct ${1:Name} {\n    $0\n};",
+        "description": "C++ struct"
+    },
+    "Function": {
+        "prefix": "fn",
+        "body": "${1:auto} ${2:name}(${3:args}) -> ${4:void} {\n    $0\n}",
+        "description": "C++ function (trailing return)"
+    },
+    "Main": {
+        "prefix": "main",
+        "body": "int main(${1:int argc, char *argv[]}) {\n    $0\n    return 0;\n}",
+        "description": "Main function"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": "for (${1:int i = 0}; ${1:i} < ${2:n}; ${1:i}++) {\n    $0\n}",
+        "description": "For loop"
+    },
+    "Range For": {
+        "prefix": "rfor",
+        "body": "for (const auto& ${1:item} : ${2:container}) {\n    $0\n}",
+        "description": "Range-based for loop"
+    },
+    "Auto": {
+        "prefix": "auto",
+        "body": "auto ${1:var} = ${2:expr};",
+        "description": "Auto variable"
+    },
+    "Lambda": {
+        "prefix": "lam",
+        "body": "[${1:&}](${2:args}) { $0 }",
+        "description": "Lambda expression"
+    },
+    "Smart Pointer": {
+        "prefix": "sp",
+        "body": "auto ${1:ptr} = std::make_shared<${2:Type}>(${3:args});",
+        "description": "Shared pointer"
+    },
+    "Unique Pointer": {
+        "prefix": "up",
+        "body": "auto ${1:ptr} = std::make_unique<${2:Type}>(${3:args});",
+        "description": "Unique pointer"
+    },
+    "Namespace": {
+        "prefix": "ns",
+        "body": "namespace ${1:name} {\n$0\n}",
+        "description": "Namespace"
+    },
+    "Using": {
+        "prefix": "using",
+        "body": "using ${1:std}::${2:cout};",
+        "description": "Using declaration"
+    },
+    "Template": {
+        "prefix": "tmpl",
+        "body": "template <typename ${1:T}>\n${2:auto} ${3:name}(${4:args}) {\n    $0\n}",
+        "description": "Function template"
+    },
+    "Test Case": {
+        "prefix": "test",
+        "body": "TEST(${1:Suite}, ${2:TestCase}) {\n    $0\n}",
+        "description": "Google Test"
+    },
+    "Cout": {
+        "prefix": "cout",
+        "body": "std::cout << ${1:var} << std::endl;",
+        "description": "Cout debug"
+    }
+}

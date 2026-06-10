@@ -1,0 +1,57 @@
+{
+    "Document": {
+        "prefix": "doc",
+        "body": [
+            "#set page($1: letter, margin: 1in)",
+            "#set text(font: \"$2:New Computer Modern\", size: 11pt)",
+            "",
+            "$0"
+        ],
+        "description": "Typst document setup"
+    },
+    "Heading": {
+        "prefix": "h",
+        "body": "= ${1:Heading}",
+        "description": "Typst heading"
+    },
+    "Subheading": {
+        "prefix": "sh",
+        "body": "== ${1:Subheading}",
+        "description": "Typst subheading"
+    },
+    "Math": {
+        "prefix": "math",
+        "body": "$${1:equation}$",
+        "description": "Typst inline math"
+    },
+    "Math Block": {
+        "prefix": "mathb",
+        "body": "$$ $0 $$",
+        "description": "Typst math block"
+    },
+    "Figure": {
+        "prefix": "fig",
+        "body": "#figure(\n    ${1:image},\n    caption: [${2:caption}],\n)",
+        "description": "Typst figure"
+    },
+    "List": {
+        "prefix": "list",
+        "body": "- ${1:item}\n- $0",
+        "description": "Typst list"
+    },
+    "Enum": {
+        "prefix": "enum",
+        "body": "+ ${1:item}\n+ $0",
+        "description": "Typst enumerated list"
+    },
+    "Table": {
+        "prefix": "tbl",
+        "body": "#table(\n    columns: ${1:2},\n    [], [],\n    [], [],\n)",
+        "description": "Typst table"
+    },
+    "Code Block": {
+        "prefix": "code",
+        "body": "```${1:rust}\n$0\n```",
+        "description": "Typst code block"
+    }
+}

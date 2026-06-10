@@ -1,0 +1,87 @@
+{
+    "Class": {
+        "prefix": "cls",
+        "body": "class ${1:Name}(${2:args}) {\n    $0\n}",
+        "description": "Kotlin class"
+    },
+    "Data Class": {
+        "prefix": "dc",
+        "body": "data class ${1:Name}(\n    val ${2:property}: ${3:String}\n)",
+        "description": "Kotlin data class"
+    },
+    "Function": {
+        "prefix": "fn",
+        "body": "fun ${1:name}(${2:args}): ${3:Unit} {\n    $0\n}",
+        "description": "Kotlin function"
+    },
+    "Fun Expression": {
+        "prefix": "fnex",
+        "body": "fun ${1:name}(${2:args}): ${3:ReturnType} = $0",
+        "description": "Kotlin expression function"
+    },
+    "Object": {
+        "prefix": "obj",
+        "body": "object ${1:Name} {\n    $0\n}",
+        "description": "Kotlin singleton object"
+    },
+    "Companion": {
+        "prefix": "comp",
+        "body": "companion object {\n    $0\n}",
+        "description": "Kotlin companion object"
+    },
+    "Enum": {
+        "prefix": "en",
+        "body": "enum class ${1:Name} {\n    ${2:VALUE}\n}",
+        "description": "Kotlin enum class"
+    },
+    "Sealed Class": {
+        "prefix": "seal",
+        "body": "sealed class ${1:Name} {\n    $0\n}",
+        "description": "Kotlin sealed class"
+    },
+    "Interface": {
+        "prefix": "iface",
+        "body": "interface ${1:Name} {\n    $0\n}",
+        "description": "Kotlin interface"
+    },
+    "When": {
+        "prefix": "when",
+        "body": "when (${1:value}) {\n    ${2:cond} -> $0\n}",
+        "description": "Kotlin when expression"
+    },
+    "Lambda": {
+        "prefix": "lam",
+        "body": "{ ${1:args} -> $0 }",
+        "description": "Kotlin lambda"
+    },
+    "Coroutine Scope": {
+        "prefix": "scope",
+        "body": "coroutineScope {\n    $0\n}",
+        "description": "Kotlin coroutineScope"
+    },
+    "Launch": {
+        "prefix": "launch",
+        "body": "launch {\n    $0\n}",
+        "description": "Kotlin coroutine launch"
+    },
+    "Suspend Fun": {
+        "prefix": "sfn",
+        "body": "suspend fun ${1:name}(${2:args}): ${3:Unit} {\n    $0\n}",
+        "description": "Kotlin suspend function"
+    },
+    "Test": {
+        "prefix": "test",
+        "body": "@Test\nfun test${1:Name}() {\n    $0\n}",
+        "description": "Kotlin test"
+    },
+    "Composable": {
+        "prefix": "compfn",
+        "body": "@Composable\nfun ${1:Name}(${2:args}) {\n    $0\n}",
+        "description": "Jetpack Compose function"
+    },
+    "Let": {
+        "prefix": "let",
+        "body": "${1:nullable}?.let { ${2:it} ->\n    $0\n}",
+        "description": "Kotlin let scope"
+    }
+}

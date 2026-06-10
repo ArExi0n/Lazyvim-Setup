@@ -6,18 +6,14 @@ return {
     init = false,
     opts = function()
       local dashboard = require("alpha.themes.dashboard")
+
       local logo = [[
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠛⠛⠻⢿⣿⣿⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠉⠁⠀⠀⠀⠀⠀⠀⠉⠻⣿⣿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀⠀⠀⠀⠀⢀⣤⣶⣶⣤⡀⠀⠀⠀⠀⠈⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⠀⠀⠀⠀⠀⠀⢰⣿⠟⠛⠛⢿⣿⡆⠀⠀⠀⠀⠸⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠸⣿⣆⡀⢀⣾⣿⠃⠀⠀⠀⠀⠀⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⢠⣴⣶⣤⣀⠙⠛⠛⠛⠋⢀⣠⣤⣶⣦⡀⠀⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣄⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠇⢸⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⣈⣛⣛⣛⣛⣛⣛⣛⣛⣛⣛⣉⣁⣠⣴⣿⣿
-⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                       ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
+                       ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
+                       ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
+                       ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
+                       ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
+                       ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
       ]]
 
       dashboard.section.header.val = vim.split(logo, "\n")
@@ -38,7 +34,15 @@ return {
       dashboard.section.header.opts.hl = "AlphaHeader"
       dashboard.section.buttons.opts.hl = "AlphaButtons"
       dashboard.section.footer.opts.hl = "AlphaFooter"
-      dashboard.opts.layout[1].val = 8
+
+      dashboard.opts.layout = {
+        { type = "padding", val = 4 },
+        dashboard.section.header,
+        { type = "padding", val = 3 },
+        dashboard.section.buttons,
+        { type = "padding", val = 2 },
+        dashboard.section.footer,
+      }
 
       return dashboard
     end,

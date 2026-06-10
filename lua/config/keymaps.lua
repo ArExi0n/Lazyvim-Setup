@@ -1,6 +1,30 @@
 -- Set leader key
 vim.g.mapleader = " "
 
+-- === No-arrow-key design ===
+-- This config avoids arrow-key dependencies entirely.
+--  • e / E  → end-of-line / end-of-word (instead of $ / e)
+--  • <leader>w{hjkl} → window navigation & resizing
+--  • <C-h/j/k/l>  → buffer prev/next, quickfix nav
+--  • <C-j/k>  → completion menu (blink.cmp)
+
+-- Select current line
+vim.keymap.set("n", "vv", "V", { desc = "Select current line" })
+
+-- Window navigation (no arrow keys needed — use leader+w + direction)
+vim.keymap.set("n", "<leader>wh", "<C-w>h", { desc = "Window: go left" })
+vim.keymap.set("n", "<leader>wj", "<C-w>j", { desc = "Window: go down" })
+vim.keymap.set("n", "<leader>wk", "<C-w>k", { desc = "Window: go up" })
+vim.keymap.set("n", "<leader>wl", "<C-w>l", { desc = "Window: go right" })
+vim.keymap.set("n", "<leader>wH", "<C-w><", { desc = "Window: shrink width" })
+vim.keymap.set("n", "<leader>wL", "<C-w>>", { desc = "Window: grow width" })
+vim.keymap.set("n", "<leader>wJ", "<C-w>-", { desc = "Window: shrink height" })
+vim.keymap.set("n", "<leader>wK", "<C-w>+", { desc = "Window: grow height" })
+vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Window: split vertical" })
+vim.keymap.set("n", "<leader>ws", "<C-w>s", { desc = "Window: split horizontal" })
+vim.keymap.set("n", "<leader>wq", "<C-w>q", { desc = "Window: close" })
+vim.keymap.set("n", "<leader>w=", "<C-w>=", { desc = "Window: equalize" })
+
 -- Buffer navigation
 vim.keymap.set("n", "<C-l>", "<Cmd>bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<C-h>", "<Cmd>bprev<CR>", { desc = "Prev buffer" })
@@ -52,6 +76,14 @@ vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 vim.keymap.set("n", "<leader>Y", [["+Y]])
 vim.keymap.set({ "n", "v" }, "<leader>d", '"_d')
 
+-- End of line — use `e` as the definitive key everywhere
+vim.keymap.set({ "n", "x", "o" }, "e", "$", { desc = "Go to end of line" })
+vim.keymap.set("n", "E", "e", { desc = "Forward to end of word" })
+
+-- Swap a/A: a goes to end of line, A appends after cursor
+vim.keymap.set("n", "a", "A", { desc = "Append at end of line" })
+vim.keymap.set("n", "A", "a", { desc = "Append after cursor" })
+
 -- Better escape
 vim.keymap.set("i", "<C-c>", "<Esc>")
 
@@ -69,8 +101,41 @@ vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz", { desc = "Previous quickfix" })
 vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next location" })
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Previous location" })
 
--- Search & replace word
-vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+-- Replace word under cursor (whole file) — prompts for replacement word
+vim.keymap.set("n", "<leader>s", function()
+	local old = vim.fn.expand("<cword>")
+	if old == "" then
+		return
+	end
+	local new = vim.fn.input("Replace '" .. old .. "' with: ")
+	if new == "" then
+		return
+	end
+	vim.cmd(string.format("%%s/\\V\\<%s\\>/%s/gI", vim.pesc(old), new:gsub("/", "\\/")))
+	vim.fn.feedkeys("ci", "n")
+end, { desc = "Search & replace word (whole file)" })
+
+-- Replace word under cursor on N lines — prompts for line count & replacement
+vim.keymap.set("n", "<leader>r", function()
+	local nlines = vim.fn.input("Number of lines (0 = current only): ")
+	if nlines == "" then
+		return
+	end
+	local count = tonumber(nlines)
+	if not count then
+		return
+	end
+	local old = vim.fn.expand("<cword>")
+	if old == "" then
+		vim.notify("No word under cursor", vim.log.levels.ERROR)
+		return
+	end
+	local new = vim.fn.input("Replace '" .. old .. "' with: ")
+	if new == "" then
+		return
+	end
+	vim.cmd(string.format(".,.+%ss/\\V\\<%s\\>/%s/gc", count, vim.pesc(old), new:gsub("/", "\\/")))
+end, { desc = "Replace word under cursor on N lines" })
 
 -- Make file executable
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true, desc = "Make file executable" })

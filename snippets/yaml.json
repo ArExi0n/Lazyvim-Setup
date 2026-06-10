@@ -1,0 +1,22 @@
+{
+    "Key Value": {
+        "prefix": "kv",
+        "body": "${1:key}: ${2:value}",
+        "description": "YAML key value"
+    },
+    "List Item": {
+        "prefix": "li",
+        "body": "- ${1:item}",
+        "description": "YAML list item"
+    },
+    "Multiline": {
+        "prefix": "ml",
+        "body": "${1:key}: |\n  ${2:text}",
+        "description": "YAML multiline string"
+    },
+    "Nested": {
+        "prefix": "nest",
+        "body": "${1:parent}:\n  ${2:child}: ${3:value}",
+        "description": "YAML nested key"
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "Table": {
+        "prefix": "tbl",
+        "body": "[${1:table}]\n$0",
+        "description": "TOML table"
+    },
+    "Array Table": {
+        "prefix": "atbl",
+        "body": "[[${1:array}]]\n$0",
+        "description": "TOML array of tables"
+    },
+    "Key Value": {
+        "prefix": "kv",
+        "body": "${1:key} = ${2:value}",
+        "description": "TOML key value"
+    }
+}

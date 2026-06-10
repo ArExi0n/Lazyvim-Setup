@@ -1,0 +1,77 @@
+{
+    "Function": {
+        "prefix": "fn",
+        "body": "function ${1:name}(${2:args})\n    $0\nend",
+        "description": "Function"
+    },
+    "Local Function": {
+        "prefix": "lfn",
+        "body": "local function ${1:name}(${2:args})\n    $0\nend",
+        "description": "Local function"
+    },
+    "Anonymous Function": {
+        "prefix": "afn",
+        "body": "function(${1:args}) $0 end",
+        "description": "Anonymous function"
+    },
+    "For I Pairs": {
+        "prefix": "fori",
+        "body": "for ${1:i}, ${2:v} in ipairs(${3:t}) do\n    $0\nend",
+        "description": "For ipairs loop"
+    },
+    "For Pairs": {
+        "prefix": "forp",
+        "body": "for ${1:k}, ${2:v} in pairs(${3:t}) do\n    $0\nend",
+        "description": "For pairs loop"
+    },
+    "If Statement": {
+        "prefix": "if",
+        "body": "if ${1:cond} then\n    $0\nend",
+        "description": "If statement"
+    },
+    "If Else": {
+        "prefix": "ife",
+        "body": "if ${1:cond} then\n    $0\nelse\n    ${2:}\nend",
+        "description": "If else"
+    },
+    "Table": {
+        "prefix": "tbl",
+        "body": "local ${1:t} = {\n    $0\n}",
+        "description": "Table literal"
+    },
+    "Module": {
+        "prefix": "mod",
+        "body": "local ${1:mod} = {}\n\nfunction ${1:mod}.${2:name}(${3:args})\n    $0\nend\n\nreturn ${1:mod}",
+        "description": "Module pattern"
+    },
+    "Require": {
+        "prefix": "req",
+        "body": "local ${1:name} = require(\"${2:module}\")",
+        "description": "Require module"
+    },
+    "Vim Keymap": {
+        "prefix": "vk",
+        "body": "vim.keymap.set(\"${1:n}\", \"${2:keys}\", ${3:fn}, { desc = \"${4:description}\" })",
+        "description": "Vim keymap set"
+    },
+    "Vim Autocmd": {
+        "prefix": "va",
+        "body": "vim.api.nvim_create_autocmd(\"${1:Event}\", {\n    pattern = \"${2:*}\",\n    callback = function()\n        $0\n    end,\n})",
+        "description": "Vim autocmd"
+    },
+    "Vim Command": {
+        "prefix": "vc",
+        "body": "vim.api.nvim_create_user_command(\"${1:Name}\", function(${2:opts})\n    $0\nend, { desc = \"${3:description}\" })",
+        "description": "Vim user command"
+    },
+    "Local": {
+        "prefix": "loc",
+        "body": "local ${1:name} = ${2:value}",
+        "description": "Local variable"
+    },
+    "Return": {
+        "prefix": "ret",
+        "body": "return $0",
+        "description": "Return"
+    }
+}

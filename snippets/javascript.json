@@ -1,0 +1,77 @@
+{
+    "Console Log": {
+        "prefix": "cl",
+        "body": "console.log(${1:var})",
+        "description": "Console log"
+    },
+    "Import": {
+        "prefix": "imp",
+        "body": "const ${1:name} = require('${2:module}')",
+        "description": "Require import"
+    },
+    "ES Import": {
+        "prefix": "impe",
+        "body": "import { ${1:something} } from '${2:module}'",
+        "description": "ES import"
+    },
+    "Module Exports": {
+        "prefix": "ex",
+        "body": "module.exports = { ${1:name} }",
+        "description": "Module exports"
+    },
+    "Function": {
+        "prefix": "fn",
+        "body": "function ${1:name}(${2:args}) {\n    $0\n}",
+        "description": "Function declaration"
+    },
+    "Arrow Function": {
+        "prefix": "afn",
+        "body": "const ${1:name} = (${2:args}) => {\n    $0\n}",
+        "description": "Arrow function"
+    },
+    "Class": {
+        "prefix": "cls",
+        "body": "class ${1:Name} {\n    constructor(${2:args}) {\n        $0\n    }\n}",
+        "description": "Class"
+    },
+    "For Loop": {
+        "prefix": "for",
+        "body": "for (let ${1:i} = 0; ${1:i} < ${2:arr}.length; ${1:i}++) {\n    $0\n}",
+        "description": "For loop"
+    },
+    "ForEach": {
+        "prefix": "fe",
+        "body": "${1:arr}.forEach((${2:item}) => {\n    $0\n})",
+        "description": "ForEach"
+    },
+    "Async Function": {
+        "prefix": "async",
+        "body": "async function ${1:name}(${2:args}) {\n    $0\n}",
+        "description": "Async function"
+    },
+    "Promise": {
+        "prefix": "prom",
+        "body": "new Promise((resolve, reject) => {\n    $0\n})",
+        "description": "Promise"
+    },
+    "Try Catch": {
+        "prefix": "tc",
+        "body": "try {\n    $0\n} catch (${1:err}) {\n    ${2:console.error(err)}\n}",
+        "description": "Try catch"
+    },
+    "Describe": {
+        "prefix": "desc",
+        "body": "describe('${1:name}', () => {\n    $0\n})",
+        "description": "Jest describe"
+    },
+    "Test": {
+        "prefix": "it",
+        "body": "it('${1:should do something}', () => {\n    $0\n})",
+        "description": "Jest test"
+    },
+    "Export Default": {
+        "prefix": "exd",
+        "body": "export default ${1:Name}",
+        "description": "Export default"
+    }
+}
