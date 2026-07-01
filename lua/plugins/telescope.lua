@@ -52,13 +52,14 @@ return {
 				desc = "Grep search",
 			},
 			{
-				"<leader>pws",
+				"<leader>fw",
 				function()
-					require("telescope.builtin").grep_string({ search = vim.fn.expand("<cword>") })
+					require("telescope.builtin").live_grep()
 				end,
+				desc = "Fuzzy search words in project",
 			},
 			{
-				"<leader>pWs",
+				"<leader>fW",
 				function()
 					require("telescope.builtin").grep_string({ search = vim.fn.expand("<cWORD>") })
 				end,

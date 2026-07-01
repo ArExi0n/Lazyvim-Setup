@@ -44,7 +44,6 @@ vim.keymap.set("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Go to p
 vim.keymap.set("n", "<leader>x", "<cmd>bdelete<CR>", { desc = "Close current buffer" })
 vim.keymap.set("n", "<leader>n", "<cmd>tabnew<CR>", { desc = "New tab" })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
 
 -- Plenary test
@@ -156,24 +155,41 @@ vim.keymap.set(
 	{ desc = "Insert logger.Error" }
 )
 
+-- Toggle AI auto-complete (supermaven) only — blink.cmp is unaffected
+local ai_enabled = true
+vim.keymap.set("n", "<leader>aid", function()
+  local api = require("supermaven-nvim.api")
+  if ai_enabled then
+    api.stop()
+    ai_enabled = false
+    vim.g.ai_cmp = false
+    vim.notify("AI autocomplete disabled", vim.log.levels.INFO)
+  else
+    api.start()
+    ai_enabled = true
+    vim.g.ai_cmp = true
+    vim.notify("AI autocomplete enabled", vim.log.levels.INFO)
+  end
+end, { desc = "Toggle AI autocomplete" })
+
 -- ========================
 -- LSP KEYMAPS
 -- ========================
-vim.keymap.set("n", "gd", vim.diagnostic.open_float, { desc = "Line diagnostics" })
-vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, { desc = "Go to definition" })
-vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { desc = "Go to declaration" })
-vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Go to implementation" })
-vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "References" })
-vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Hover documentation" })
+vim.keymap.set("n", "gd", function() vim.diagnostic.open_float() end, { desc = "Line diagnostics" })
+vim.keymap.set("n", "<leader>gd", function() vim.lsp.buf.definition() end, { desc = "Go to definition" })
+vim.keymap.set("n", "gD", function() vim.lsp.buf.declaration() end, { desc = "Go to declaration" })
+vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, { desc = "Go to implementation" })
+vim.keymap.set("n", "gr", function() vim.lsp.buf.references() end, { desc = "References" })
+vim.keymap.set("n", "H", function() vim.lsp.buf.hover() end, { desc = "Hover documentation" })
 vim.keymap.set("n", "<leader>vws", function()
 	require("telescope.builtin").lsp_workspace_symbols()
 end, { desc = "Workspace symbols" })
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous diagnostic" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic" })
-vim.keymap.set("n", "<leader>vca", vim.lsp.buf.code_action, { desc = "Code action" })
-vim.keymap.set("n", "<leader>vrr", vim.lsp.buf.references, { desc = "References" })
-vim.keymap.set("n", "<leader>vrn", vim.lsp.buf.rename, { desc = "Rename symbol" })
-vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, { desc = "Signature help" })
+vim.keymap.set("n", "[d", function() vim.diagnostic.goto_prev() end, { desc = "Previous diagnostic" })
+vim.keymap.set("n", "]d", function() vim.diagnostic.goto_next() end, { desc = "Next diagnostic" })
+vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, { desc = "Code action" })
+vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, { desc = "References" })
+vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, { desc = "Rename symbol" })
+vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, { desc = "Signature help" })
 
 vim.keymap.set("n", "<leader>f", function()
 	vim.lsp.buf.format({ async = true })

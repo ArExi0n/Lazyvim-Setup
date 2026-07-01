@@ -71,7 +71,12 @@
     },
     "Return": {
         "prefix": "ret",
+        "body": "return {\n    $0\n}",
+        "description": "Return statement"
+    },
+    "Return Value": {
+        "prefix": "retv",
         "body": "return $0",
-        "description": "Return"
+        "description": "Return value"
     }
 }
