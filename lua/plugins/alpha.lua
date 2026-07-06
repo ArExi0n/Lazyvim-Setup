@@ -9,8 +9,6 @@ return {
 
       local logo = [[]]
 
-      dashboard.section.header.val = vim.split(logo, "\n")
-
       dashboard.section.buttons.val = {
         dashboard.button("f", "  Find File", "<cmd>lua require('telescope.builtin').find_files({ hidden = true })<CR>"),
         dashboard.button("r", "  Recent Files", "<cmd>lua require('telescope.builtin').buffers()<CR>"),
