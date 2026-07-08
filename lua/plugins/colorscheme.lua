@@ -79,9 +79,7 @@ return {
 						NoiceCmdlinePopup = { bg = "NONE" },
 						NoiceCmdlinePopupBorder = { bg = "NONE" },
 						WhichKeyFloat = { bg = "NONE" },
-						NeoTreeNormal = { bg = "NONE" },
-						NeoTreeNormalNC = { bg = "NONE" },
-						NeoTreeEndOfBuffer = { bg = "NONE" },
+
 						NotifyBackground = { bg = "NONE" },
 						MasonNormal = { bg = "NONE" },
 						LazyNormal = { bg = "NONE" },
@@ -90,7 +88,7 @@ return {
 				integrations = {
 					cmp = true,
 					gitsigns = true,
-					nvimtree = true,
+	
 					treesitter = true,
 					notify = true,
 					mini = {
@@ -116,7 +114,7 @@ return {
 							information = { "underline" },
 						},
 					},
-					neotree = true,
+	
 					noice = true,
 					mason = true,
 				},

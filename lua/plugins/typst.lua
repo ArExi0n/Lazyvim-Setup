@@ -7,62 +7,7 @@ return {
 		end,
 	},
 
-	{
-		"neovim/nvim-lspconfig",
-		opts = {
-			servers = {
-				tinymist = {
-					autostart = true,
-					settings = {
-						defaultEntryFile = "",
-						exportPdf = "onSave",
-						outputPath = "$root/$name",
-						formatterMode = "typstyle",
-						previewFeature = "enable",
-						sysInputs = {},
-					},
-					root_dir = function(fname)
-						return require("lspconfig.util").root_pattern("typst.toml", ".git")(fname)
-							or vim.fn.fnamemodify(fname, ":h")
-					end,
-					on_attach = function(_, bufnr)
-						vim.keymap.set("n", "<leader>tp", function()
-							vim.lsp.buf.execute_command({
-								command = "tinymist.startDefaultPreview",
-								arguments = { vim.api.nvim_buf_get_name(bufnr) },
-							})
-						end, { buffer = bufnr, desc = "Typst: start preview" })
-
-						vim.keymap.set("n", "<leader>tP", function()
-							vim.lsp.buf.execute_command({
-								command = "tinymist.stopPreview",
-								arguments = {},
-							})
-						end, { buffer = bufnr, desc = "Typst: stop preview" })
-
-						vim.keymap.set("n", "<leader>te", function()
-							vim.lsp.buf.execute_command({
-								command = "tinymist.exportPdf",
-								arguments = { vim.api.nvim_buf_get_name(bufnr) },
-							})
-						end, { buffer = bufnr, desc = "Typst: export PDF" })
-
-						vim.keymap.set("n", "<leader>ts", function()
-							vim.lsp.buf.execute_command({
-								command = "tinymist.exportSvg",
-								arguments = { vim.api.nvim_buf_get_name(bufnr) },
-							})
-						end, { buffer = bufnr, desc = "Typst: export SVG" })
-
-						vim.keymap.set("n", "<leader>tv", function()
-							local pdf = vim.fn.expand("%:r") .. ".pdf"
-							vim.fn.jobstart({ "sioyek", pdf }, { detach = true })
-						end, { buffer = bufnr, desc = "Typst: open in sioyek" })
-					end,
-				},
-			},
-		},
-	},
+	-- tinymist LSP server config is in lsp.lua
 
 	{
 		"nvim-treesitter/nvim-treesitter",

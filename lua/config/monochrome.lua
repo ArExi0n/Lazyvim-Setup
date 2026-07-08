@@ -134,28 +134,54 @@ function M.apply()
 	-- Git signs — flat fg
 	local git_groups = {
 		"GitSignsAdd", "GitSignsChange", "GitSignsDelete",
-		"NeoTreeGitAdded", "NeoTreeGitModified", "NeoTreeGitDeleted",
-		"NeoTreeGitUntracked", "NeoTreeGitConflict", "NeoTreeGitIgnored", "NeoTreeGitStaged",
+
 	}
 	for _, group in ipairs(git_groups) do
 		hi(group)
 	end
 
-	-- Neo-tree — transparent
-	hi("NeoTreeNormal")
-	hi("NeoTreeNormalNC")
-	hi("NeoTreeRootName", { bold = true })
-	hi("NeoTreeDirectoryName")
-	hi("NeoTreeDirectoryIcon")
-	hi("NeoTreeFileName")
-	hi("NeoTreeFileNameOpened", { bold = true })
-	hi("NeoTreeIndentMarker")
-	hi("NeoTreeExpander")
-	hi("NeoTreeDotfile")
-	hi("NeoTreeHiddenByName")
-	hi("NeoTreeSymbolicLinkTarget")
-	hi("NeoTreeCursorLine", { bg = cursor_bg })
-	hi("NeoTreeEndOfBuffer")
+
+
+	-- Oil — dark explorer
+	local oil_bg = mix(bg, fg, 0.02)
+	local oil_cursor = mix(bg, fg, 0.06)
+	local oil_hl = mix(bg, fg, 0.10)
+	local oil_dim = mix(bg, fg, 0.3)
+	local oil_bright = mix(bg, fg, 0.7)
+	hi("OilNormal", { bg = oil_bg })
+	hi("OilCursorline", { bg = oil_cursor })
+	hi("OilDir", { bold = true })
+	hi("OilDirIcon", { bold = true })
+	hi("OilDirHidden", { fg = oil_dim })
+	hi("OilFile")
+	hi("OilFileIcon")
+	hi("OilFileHidden", { fg = oil_dim })
+	hi("OilHidden", { fg = oil_dim })
+	hi("OilLink", { italic = true })
+	hi("OilLinkIcon", { italic = true })
+	hi("OilLinkHidden", { fg = oil_dim, italic = true })
+	hi("OilLinkTarget", { fg = oil_dim })
+	hi("OilLinkTargetHidden", { fg = oil_dim })
+	hi("OilOrphanLink", { fg = oil_dim, italic = true })
+	hi("OilOrphanLinkHidden", { fg = oil_dim, italic = true })
+	hi("OilOrphanLinkTarget", { fg = oil_dim })
+	hi("OilOrphanLinkTargetHidden", { fg = oil_dim })
+	hi("OilSocket", { fg = oil_bright })
+	hi("OilSocketHidden", { fg = oil_dim })
+	hi("OilExec")
+	hi("OilSpecial")
+	hi("OilEmpty", { fg = oil_dim })
+	hi("OilModified", { fg = oil_bright })
+	hi("OilCreate", { fg = oil_bright })
+	hi("OilDelete", { fg = oil_dim })
+	hi("OilMove", { fg = oil_bright })
+	hi("OilCopy", { fg = oil_bright })
+	hi("OilChange", { fg = oil_bright })
+	hi("OilRestore", { fg = oil_bright })
+	hi("OilPurge", { fg = oil_dim })
+	hi("OilTrash", { fg = oil_dim })
+	hi("OilTrashSourcePath", { fg = oil_dim })
+	hi("OilPreviewCursor", { blend = 100 })
 
 	-- Dev icons
 	hi("DevIconRs")

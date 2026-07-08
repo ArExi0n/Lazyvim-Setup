@@ -221,23 +221,7 @@ return {
 				},
 
 				rust_analyzer = {
-					autostart = true,
-					settings = {
-						["rust-analyzer"] = {
-							cargo = {
-								allFeatures = false,
-								loadOutDirsFromCheck = true,
-								buildScripts = { enable = true },
-							},
-							checkOnSave = { command = "check", allFeatures = false },
-							procMacro = { enable = true },
-							completion = { callable = { snippets = "fill_arguments" } },
-							imports = {
-								merge = { glob = true },
-								preferNoStd = false,
-							},
-						},
-					},
+					enabled = false,
 				},
 
 				gopls = {
@@ -264,6 +248,52 @@ return {
 				},
 
 				zls = { autostart = true },
+
+				tinymist = {
+					autostart = true,
+					settings = {
+						defaultEntryFile = "",
+						exportPdf = "onSave",
+						outputPath = "$root/$name",
+						formatterMode = "typstyle",
+						previewFeature = "enable",
+						sysInputs = {},
+					},
+					root_dir = function(fname)
+						return require("lspconfig.util").root_pattern("typst.toml", ".git")(fname)
+							or vim.fn.fnamemodify(fname, ":h")
+					end,
+					on_attach = function(_, bufnr)
+						vim.keymap.set("n", "<leader>tp", function()
+							vim.lsp.buf.execute_command({
+								command = "tinymist.startDefaultPreview",
+								arguments = { vim.api.nvim_buf_get_name(bufnr) },
+							})
+						end, { buffer = bufnr, desc = "Typst: start preview" })
+						vim.keymap.set("n", "<leader>tP", function()
+							vim.lsp.buf.execute_command({
+								command = "tinymist.stopPreview",
+								arguments = {},
+							})
+						end, { buffer = bufnr, desc = "Typst: stop preview" })
+						vim.keymap.set("n", "<leader>te", function()
+							vim.lsp.buf.execute_command({
+								command = "tinymist.exportPdf",
+								arguments = { vim.api.nvim_buf_get_name(bufnr) },
+							})
+						end, { buffer = bufnr, desc = "Typst: export PDF" })
+						vim.keymap.set("n", "<leader>ts", function()
+							vim.lsp.buf.execute_command({
+								command = "tinymist.exportSvg",
+								arguments = { vim.api.nvim_buf_get_name(bufnr) },
+							})
+						end, { buffer = bufnr, desc = "Typst: export SVG" })
+						vim.keymap.set("n", "<leader>tv", function()
+							local pdf = vim.fn.expand("%:r") .. ".pdf"
+							vim.fn.jobstart({ "sioyek", pdf }, { detach = true })
+						end, { buffer = bufnr, desc = "Typst: open in sioyek" })
+					end,
+				},
 			},
 
 			setup = {},
@@ -284,7 +314,7 @@ return {
 
 			local ensure_installed = {}
 			for server, _ in pairs(opts.servers or {}) do
-				if server ~= "sourcekit" then
+				if server ~= "sourcekit" and server ~= "rust_analyzer" then
 					table.insert(ensure_installed, server)
 				end
 			end
@@ -292,6 +322,7 @@ return {
 			require("mason-lspconfig").setup({
 				ensure_installed = ensure_installed,
 				automatic_installation = true,
+				automatic_enable = false,
 				handlers = {
 					function(server_name)
 						local server_opts = opts.servers[server_name] or {}
@@ -301,6 +332,13 @@ return {
 					end,
 				},
 			})
+
+			-- Kill any rust_analyzer client that managed to sneak in
+			vim.defer_fn(function()
+				for _, client in ipairs(vim.lsp.get_clients({ name = "rust_analyzer" })) do
+					client:stop()
+				end
+			end, 500)
 
 			local sk_opts = vim.tbl_deep_extend("force", opts.servers.sourcekit or {}, {
 				capabilities = capabilities,

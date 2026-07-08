@@ -31,8 +31,7 @@ vim.keymap.set("n", "<C-h>", "<Cmd>bprev<CR>", { desc = "Prev buffer" })
 vim.keymap.set("n", "[b", "<Cmd>bprev<CR>", { desc = "Prev buffer" })
 vim.keymap.set("n", "]b", "<Cmd>bnext<CR>", { desc = "Next buffer" })
 
--- File explorer
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<CR>", { desc = "Toggle file explorer" })
+
 
 -- Move selected lines
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")

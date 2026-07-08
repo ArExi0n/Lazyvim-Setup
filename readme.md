@@ -8,7 +8,7 @@
 
 | Key | Action |
 |-----|--------|
-| `<leader>pv` | Toggle file explorer (Neotree) |
+| `<leader>e` | Toggle file explorer (oil.nvim) |
 
 ## LSP / Code Navigation
 
@@ -242,5 +242,5 @@
 | `<C-j>` / `<C-k>` (telescope) | Move selection next/prev |
 | `N` (file browser) | Create file |
 | `h` (file browser) | Go to parent directory |
-| `t` (nvim-tree) | Open in tab |
+| `t` (oil) | Open in tab |
 | `q` / `<Esc>` (dapui float) | Close floating window |
