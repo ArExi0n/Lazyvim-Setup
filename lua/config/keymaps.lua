@@ -32,6 +32,22 @@ vim.keymap.set("n", "[b", "<Cmd>bprev<CR>", { desc = "Prev buffer" })
 vim.keymap.set("n", "]b", "<Cmd>bnext<CR>", { desc = "Next buffer" })
 
 
+-- Oil toggle
+vim.keymap.set("n", "<leader>e", function()
+	if vim.bo.filetype == "oil" then
+		local prev = vim.g.oil_prev_buf
+		if prev and vim.api.nvim_buf_is_valid(prev) then
+			vim.api.nvim_win_set_buf(0, prev)
+			return
+		end
+		vim.cmd("b#")
+	else
+		vim.g.oil_prev_buf = vim.api.nvim_get_current_buf()
+		local dir = vim.fn.expand("%:p:h")
+		if dir == "" then dir = vim.fn.getcwd() end
+		require("oil").open(dir)
+	end
+end, { desc = "Toggle file explorer" })
 
 -- Move selected lines
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
