@@ -33,6 +33,14 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+-- Clear AI ghost text when leaving insert mode
+vim.api.nvim_create_autocmd("InsertLeave", {
+  callback = function()
+    pcall(function() require("supermaven-nvim.api").clear_suggestion() end)
+    pcall(function() require("blink.cmp").hide() end)
+  end,
+})
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = {
     "yaml", "yml", "typst",
