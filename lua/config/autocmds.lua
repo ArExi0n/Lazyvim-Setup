@@ -41,6 +41,8 @@ vim.api.nvim_create_autocmd("InsertLeave", {
   end,
 })
 
+require("config.diag-blob").setup()
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = {
     "yaml", "yml", "typst",

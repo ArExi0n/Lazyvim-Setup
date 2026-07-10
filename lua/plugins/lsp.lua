@@ -396,14 +396,19 @@ return {
 					map("n", "[d", vim.diagnostic.goto_prev, "LSP: Previous diagnostic")
 					map("n", "]d", vim.diagnostic.goto_next, "LSP: Next diagnostic")
 				map("n", "<leader>vca", vim.lsp.buf.code_action, "LSP: Code action")
-				map("n", "<leader>vi", function()
-					vim.lsp.buf.code_action({
-						context = {
-							only = { "source.organizeImports", "source.addMissingImports", "source.fixAll" },
-						},
-						apply = true,
-					})
-				end, "LSP: Fix imports")
+					map({ "n", "x" }, "<leader>qf", function()
+						vim.lsp.buf.code_action({ context = { only = { "quickfix" } } })
+					end, "LSP: Quick fix")
+map("n", "<leader>vi", function()
+				local actions = vim.lsp.buf.code_action({
+					context = {
+						only = { "source.organizeImports", "source.addMissingImports", "source.fixAll" },
+					},
+				})
+				if not actions or vim.tbl_isempty(actions.result or {}) then
+					actions = vim.lsp.buf.code_action()
+				end
+			end, "LSP: Fix imports")
 				map("n", "<leader>vrr", vim.lsp.buf.references, "LSP: References")
 					map("n", "<leader>vrn", vim.lsp.buf.rename, "LSP: Rename")
 					map("i", "<C-h>", vim.lsp.buf.signature_help, "LSP: Signature help")

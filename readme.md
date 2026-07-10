@@ -23,7 +23,9 @@
 | `<leader>vws` | Workspace symbols |
 | `[d` | Previous diagnostic |
 | `]d` | Next diagnostic |
-| `<leader>vca` | Code action |
+| `<leader>vca` | Code action (all) |
+| `<leader>qf` | Quick fix (lightbulb) |
+| `<leader>vi` | Fix imports / organize |
 | `<leader>vrr` | References |
 | `<leader>vrn` | Rename symbol |
 | `<C-h>` (insert) | Signature help |
@@ -143,6 +145,7 @@
 | `<leader>k` | Next location |
 | `<leader>j` | Previous location |
 | `<leader>tt` | Toggle trouble quickfix |
+| `<leader>xq` | Show quickfix list (telescope) |
 
 ## Buffer Navigation
 
