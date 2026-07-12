@@ -263,30 +263,27 @@ return {
 						return require("lspconfig.util").root_pattern("typst.toml", ".git")(fname)
 							or vim.fn.fnamemodify(fname, ":h")
 					end,
-					on_attach = function(_, bufnr)
+					on_attach = function(client, bufnr)
+						local function notify(cmd, args)
+							client:exec_cmd({ command = cmd, arguments = args }, { bufnr = bufnr }, function(err, res)
+								if err then
+									vim.notify(string.format("tinymist: %s — %s", cmd, err.message), vim.log.levels.ERROR)
+								else
+									vim.notify(string.format("tinymist: %s — %s", cmd, vim.inspect(res)), vim.log.levels.INFO)
+								end
+							end)
+						end
 						vim.keymap.set("n", "<leader>tp", function()
-							vim.lsp.buf.execute_command({
-								command = "tinymist.startDefaultPreview",
-								arguments = { vim.api.nvim_buf_get_name(bufnr) },
-							})
+							notify("tinymist.startDefaultPreview", { vim.api.nvim_buf_get_name(bufnr) })
 						end, { buffer = bufnr, desc = "Typst: start preview" })
 						vim.keymap.set("n", "<leader>tP", function()
-							vim.lsp.buf.execute_command({
-								command = "tinymist.stopPreview",
-								arguments = {},
-							})
+							notify("tinymist.doKillPreview", {})
 						end, { buffer = bufnr, desc = "Typst: stop preview" })
 						vim.keymap.set("n", "<leader>te", function()
-							vim.lsp.buf.execute_command({
-								command = "tinymist.exportPdf",
-								arguments = { vim.api.nvim_buf_get_name(bufnr) },
-							})
+							notify("tinymist.exportPdf", { vim.api.nvim_buf_get_name(bufnr) })
 						end, { buffer = bufnr, desc = "Typst: export PDF" })
 						vim.keymap.set("n", "<leader>ts", function()
-							vim.lsp.buf.execute_command({
-								command = "tinymist.exportSvg",
-								arguments = { vim.api.nvim_buf_get_name(bufnr) },
-							})
+							notify("tinymist.exportSvg", { vim.api.nvim_buf_get_name(bufnr) })
 						end, { buffer = bufnr, desc = "Typst: export SVG" })
 						vim.keymap.set("n", "<leader>tv", function()
 							local pdf = vim.fn.expand("%:r") .. ".pdf"
@@ -340,10 +337,16 @@ return {
 				end
 			end, 500)
 
-			local sk_opts = vim.tbl_deep_extend("force", opts.servers.sourcekit or {}, {
-				capabilities = capabilities,
-			})
-			require("lspconfig").sourcekit.setup(sk_opts)
+			-- Direct setup for servers that need it
+			for _, name in ipairs({ "sourcekit", "tinymist" }) do
+				local srv_opts = vim.tbl_deep_extend("force", opts.servers[name] or {}, {
+					capabilities = capabilities,
+				})
+				local ok, err = pcall(require("lspconfig")[name].setup, srv_opts)
+				if not ok then
+					vim.notify(("Failed to setup %s: %s"):format(name, err), vim.log.levels.WARN)
+				end
+			end
 
 			vim.api.nvim_create_user_command("SourcekitRestart", function()
 				for _, client in ipairs(vim.lsp.get_clients({ name = "sourcekit" })) do

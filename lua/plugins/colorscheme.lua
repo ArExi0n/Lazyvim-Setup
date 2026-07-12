@@ -1,7 +1,3 @@
-local function is_koda()
-	return vim.g.colors_name and vim.g.colors_name:match("^koda")
-end
-
 return {
 	{
 		"oskarnurm/koda.nvim",
@@ -10,9 +6,6 @@ return {
 		config = function()
 			require("config.koda").setup("koda-dark")
 			vim.cmd.colorscheme("koda-dark")
-			if is_koda() then
-				pcall(require("config.monochrome").apply)
-			end
 		end,
 	},
 	{
@@ -48,47 +41,9 @@ return {
 					operators = {},
 				},
 				color_overrides = {},
-				custom_highlights = function(colors)
-					return {
-						CursorLine = { bg = "NONE" },
-						CursorLineNr = { fg = colors.lavender, bg = "NONE" },
-						LspReferenceText = { bg = "NONE" },
-						LspReferenceRead = { bg = "NONE" },
-						LspReferenceWrite = { bg = "NONE" },
-						MatchParen = { fg = colors.peach, bg = "NONE", bold = true },
-						TelescopeNormal = { bg = "NONE" },
-						TelescopeBorder = { bg = "NONE" },
-						TelescopePromptNormal = { bg = "NONE" },
-						TelescopePromptBorder = { bg = "NONE" },
-						TelescopePromptTitle = { bg = "NONE" },
-						TelescopeResultsNormal = { bg = "NONE" },
-						TelescopeResultsBorder = { bg = "NONE" },
-						TelescopeResultsTitle = { bg = "NONE" },
-						TelescopePreviewNormal = { bg = "NONE" },
-						TelescopePreviewBorder = { bg = "NONE" },
-						TelescopePreviewTitle = { bg = "NONE" },
-						NormalFloat = { bg = "NONE" },
-						FloatBorder = { bg = "NONE" },
-						FloatTitle = { bg = "NONE" },
-						Pmenu = { bg = "NONE" },
-						PmenuSel = { bg = colors.surface0 },
-						PmenuBorder = { bg = "NONE" },
-						LspInfoBorder = { bg = "NONE" },
-						NoicePopup = { bg = "NONE" },
-						NoicePopupBorder = { bg = "NONE" },
-						NoiceCmdlinePopup = { bg = "NONE" },
-						NoiceCmdlinePopupBorder = { bg = "NONE" },
-						WhichKeyFloat = { bg = "NONE" },
-
-						NotifyBackground = { bg = "NONE" },
-						MasonNormal = { bg = "NONE" },
-						LazyNormal = { bg = "NONE" },
-					}
-				end,
 				integrations = {
 					cmp = true,
 					gitsigns = true,
-	
 					treesitter = true,
 					notify = true,
 					mini = {
@@ -114,7 +69,6 @@ return {
 							information = { "underline" },
 						},
 					},
-	
 					noice = true,
 					mason = true,
 				},
@@ -130,5 +84,56 @@ return {
 				end,
 			})
 		end,
+	},
+	{
+		"folke/tokyonight.nvim",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"rebelot/kanagawa.nvim",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"rose-pine/neovim",
+		name = "rose-pine",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"ellisonleao/gruvbox.nvim",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"navarasu/onedark.nvim",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"EdenEast/nightfox.nvim",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"sainnhe/everforest",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"sainnhe/sonokai",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"Mofiqul/dracula.nvim",
+		lazy = true,
+		priority = 100,
+	},
+	{
+		"nyoom-engineering/oxocarbon.nvim",
+		lazy = true,
+		priority = 100,
 	},
 }

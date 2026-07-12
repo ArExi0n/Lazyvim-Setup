@@ -51,6 +51,8 @@ local function apply(name, opts)
 
 	if name:match("^koda") then
 		pcall(require("config.monochrome").apply)
+	else
+		pcall(require("config.transparent").apply)
 	end
 	vim.opt.cursorline = false
 	vim.opt.cursorcolumn = false

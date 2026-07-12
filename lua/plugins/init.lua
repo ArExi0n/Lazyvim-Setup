@@ -16,6 +16,7 @@ return {
   { import = "plugins.telescope" },
   { import = "plugins.testing" },
   { import = "plugins.treesitter" },
+  { import = "plugins.snacks" },
   { import = "plugins.trouble" },
   { import = "plugins.typst" },
   { import = "plugins.ui" },

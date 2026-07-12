@@ -115,7 +115,7 @@ vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz", { desc = "Previous quickfix" })
 vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next location" })
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Previous location" })
 vim.keymap.set("n", "<leader>tt", "<cmd>Trouble quickfix toggle<cr>", { desc = "Toggle trouble quickfix" })
-vim.keymap.set("n", "<leader>xq", "<cmd>Telescope quickfix<cr>", { desc = "Show quickfix list" })
+vim.keymap.set("n", "<leader>qx", "<cmd>Telescope quickfix<cr>", { desc = "Show quickfix list" })
 
 -- Replace word under cursor (whole file) — prompts for replacement word
 vim.keymap.set("n", "<leader>s", function()
@@ -222,25 +222,31 @@ vim.keymap.set("n", "<leader><leader>", function()
 	vim.cmd("so")
 end, { desc = "Reload config" })
 
+local function tinymist_cmd(cmd, args)
+	local client = vim.lsp.get_clients({ name = "tinymist", bufnr = 0 })[1]
+	if not client then
+		vim.notify("tinymist not attached", vim.log.levels.ERROR)
+		return
+	end
+	client:exec_cmd({ command = cmd, arguments = args or {} }, { bufnr = 0 }, function(err, res)
+		if err then
+			vim.notify(string.format("tinymist: %s — %s", cmd, err.message), vim.log.levels.ERROR)
+		else
+			vim.notify(string.format("tinymist: %s — %s", cmd, vim.inspect(res)), vim.log.levels.INFO)
+		end
+	end)
+end
+
 vim.keymap.set("n", "<leader>tp", function()
-	vim.lsp.buf.execute_command({
-		command = "tinymist.startDefaultPreview",
-		arguments = { vim.api.nvim_buf_get_name(0) },
-	})
+	tinymist_cmd("tinymist.startDefaultPreview", { vim.api.nvim_buf_get_name(0) })
 end, { desc = "Typst: start preview" })
 
 vim.keymap.set("n", "<leader>tP", function()
-	vim.lsp.buf.execute_command({
-		command = "tinymist.stopPreview",
-		arguments = {},
-	})
+	tinymist_cmd("tinymist.doKillPreview")
 end, { desc = "Typst: stop preview" })
 
 vim.keymap.set("n", "<leader>te", function()
-	vim.lsp.buf.execute_command({
-		command = "tinymist.exportPdf",
-		arguments = { vim.api.nvim_buf_get_name(0) },
-	})
+	tinymist_cmd("tinymist.exportPdf", { vim.api.nvim_buf_get_name(0) })
 end, { desc = "Typst: export PDF" })
 
 vim.keymap.set("n", "<leader>tv", function()

@@ -41,6 +41,13 @@ vim.api.nvim_create_autocmd("InsertLeave", {
   end,
 })
 
+-- Apply transparent backgrounds on every colorscheme change
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = function()
+		require("config.transparent").apply()
+	end,
+})
+
 require("config.diag-blob").setup()
 
 vim.api.nvim_create_autocmd("FileType", {

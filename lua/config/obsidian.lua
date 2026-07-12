@@ -254,7 +254,7 @@ function M.setup_markdown_buffer(bufnr)
 	opt.linebreak = true
 	opt.conceallevel = 0
 	opt.concealcursor = ""
-	opt.spell = false
+	opt.spell = true
 	opt.textwidth = 100
 
 	pcall(vim.treesitter.stop, bufnr)
