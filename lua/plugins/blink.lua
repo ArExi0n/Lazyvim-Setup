@@ -19,6 +19,10 @@ return {
 			opts.fuzzy.frecency = { enabled = true }
 			opts.fuzzy.use_proximity = true
 			opts.fuzzy.sorts = { "score", "sort_text", "kind" }
+
+			opts.sources = vim.tbl_deep_extend("force", opts.sources or {}, {
+				default = { "lsp", "path", "snippets", "buffer" },
+			})
 		end,
 	},
 }

@@ -172,22 +172,53 @@ vim.keymap.set(
 	{ desc = "Insert logger.Error" }
 )
 
--- Toggle AI auto-complete (supermaven) only — blink.cmp is unaffected
-local ai_enabled = true
+-- Toggle AI providers independently
+local ai_state = {
+  copilot = true,
+  supermaven = true,
+}
 vim.keymap.set("n", "<leader>aid", function()
-  local api = require("supermaven-nvim.api")
-  if ai_enabled then
-    api.stop()
-    ai_enabled = false
-    vim.g.ai_cmp = false
-    vim.notify("AI autocomplete disabled", vim.log.levels.INFO)
-  else
-    api.start()
-    ai_enabled = true
-    vim.g.ai_cmp = true
-    vim.notify("AI autocomplete enabled", vim.log.levels.INFO)
+  local label = function(name, enabled)
+    return (enabled and "[x] " or "[ ] ") .. name
   end
-end, { desc = "Toggle AI autocomplete" })
+  local items = {
+    { label = label("Copilot", ai_state.copilot), key = "copilot" },
+    { label = label("Supermaven", ai_state.supermaven), key = "supermaven" },
+    { label = "---", key = "sep" },
+    { label = "Enable all", key = "enable_all" },
+    { label = "Disable all", key = "disable_all" },
+  }
+  vim.ui.select(items, {
+    prompt = "AI providers:",
+    format_item = function(item) return item.label end,
+  }, function(choice)
+    if not choice then return end
+    local function set_copilot(on)
+      pcall(function()
+        if on then require("copilot.suggestion").enable() else require("copilot.suggestion").disable() end
+      end)
+      ai_state.copilot = on
+    end
+    local function set_supermaven(on)
+      pcall(function()
+        if on then require("supermaven-nvim.api").start() else require("supermaven-nvim.api").stop() end
+      end)
+      ai_state.supermaven = on
+    end
+    if choice.key == "copilot" then
+      set_copilot(not ai_state.copilot)
+    elseif choice.key == "supermaven" then
+      set_supermaven(not ai_state.supermaven)
+    elseif choice.key == "enable_all" then
+      set_copilot(true); set_supermaven(true)
+    elseif choice.key == "disable_all" then
+      set_copilot(false); set_supermaven(false)
+    end
+    vim.notify(string.format("Copilot: %s, Supermaven: %s",
+      ai_state.copilot and "on" or "off",
+      ai_state.supermaven and "on" or "off"), vim.log.levels.INFO)
+  end)
+end, { desc = "Toggle AI provider(s)" })
 
 -- ========================
 -- LSP KEYMAPS
