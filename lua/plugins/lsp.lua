@@ -258,6 +258,9 @@ return {
 						formatterMode = "typstyle",
 						previewFeature = "enable",
 						sysInputs = {},
+						preview = {
+							invertColors = "always",
+						},
 					},
 					root_dir = function(fname)
 						return require("lspconfig.util").root_pattern("typst.toml", ".git")(fname)
@@ -319,13 +322,16 @@ return {
 			require("mason-lspconfig").setup({
 				ensure_installed = ensure_installed,
 				automatic_installation = true,
-				automatic_enable = false,
+				automatic_enable = true,
 				handlers = {
 					function(server_name)
 						local server_opts = opts.servers[server_name] or {}
 						server_opts.capabilities =
 							vim.tbl_deep_extend("force", {}, capabilities, server_opts.capabilities or {})
-						require("lspconfig")[server_name].setup(server_opts)
+						local ok, err = pcall(require("lspconfig")[server_name].setup, server_opts)
+						if not ok then
+							vim.notify(("Failed to setup %s: %s"):format(server_name, err), vim.log.levels.WARN)
+						end
 					end,
 				},
 			})
@@ -337,16 +343,11 @@ return {
 				end
 			end, 500)
 
-			-- Direct setup for servers that need it
-			for _, name in ipairs({ "sourcekit", "tinymist" }) do
-				local srv_opts = vim.tbl_deep_extend("force", opts.servers[name] or {}, {
-					capabilities = capabilities,
-				})
-				local ok, err = pcall(require("lspconfig")[name].setup, srv_opts)
-				if not ok then
-					vim.notify(("Failed to setup %s: %s"):format(name, err), vim.log.levels.WARN)
-				end
-			end
+			-- Direct setup for sourcekit
+			local sk_opts = vim.tbl_deep_extend("force", opts.servers.sourcekit or {}, {
+				capabilities = capabilities,
+			})
+			require("lspconfig").sourcekit.setup(sk_opts)
 
 			vim.api.nvim_create_user_command("SourcekitRestart", function()
 				for _, client in ipairs(vim.lsp.get_clients({ name = "sourcekit" })) do
