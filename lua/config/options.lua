@@ -2,6 +2,7 @@ vim.opt.guicursor = ""
 
 vim.opt.nu = true
 vim.opt.relativenumber = true
+vim.opt.numberwidth = 4
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
@@ -23,10 +24,10 @@ vim.opt.termguicolors = true
 
 vim.opt.scrolloff = 10
 vim.opt.smoothscroll = false
-vim.opt.signcolumn = "auto"
+vim.opt.signcolumn = "yes"
 vim.opt.isfname:append("@-@")
 
-vim.opt.updatetime = 300
+vim.opt.updatetime = 500
 
 vim.opt.colorcolumn = "0"
 vim.g.mapleader = " "
@@ -53,6 +54,7 @@ vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.splitkeep = "cursor"
 vim.opt.cursorline = false
+vim.opt.list = false
 vim.opt.mouse = "a"
 vim.opt.formatoptions:append({ "r" })
 

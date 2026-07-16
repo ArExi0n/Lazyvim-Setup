@@ -33,7 +33,6 @@ function M.apply()
 	local cursor_bg = mix(bg, fg, 0.04)
 	local visual_bg = mix(bg, fg, 0.12)
 	local select_bg = mix(bg, fg, 0.20)
-	local float_bg = mix(bg, fg, 0.05)
 	local popup_bg = mix(bg, fg, 0.08)
 
 	-- Core UI — transparent
@@ -113,14 +112,26 @@ function M.apply()
 
 	-- Diagnostics — all flat fg, no colors
 	local diagnostic_groups = {
-		"DiagnosticError", "DiagnosticWarn", "DiagnosticInfo", "DiagnosticHint",
-		"DiagnosticSignError", "DiagnosticSignWarn", "DiagnosticSignInfo", "DiagnosticSignHint",
-		"DiagnosticVirtualTextError", "DiagnosticVirtualTextWarn",
-		"DiagnosticVirtualTextInfo", "DiagnosticVirtualTextHint",
-		"DiagnosticFloatingError", "DiagnosticFloatingWarn",
-		"DiagnosticFloatingInfo", "DiagnosticFloatingHint",
-		"DiagnosticUnderlineError", "DiagnosticUnderlineWarn",
-		"DiagnosticUnderlineInfo", "DiagnosticUnderlineHint",
+		"DiagnosticError",
+		"DiagnosticWarn",
+		"DiagnosticInfo",
+		"DiagnosticHint",
+		"DiagnosticSignError",
+		"DiagnosticSignWarn",
+		"DiagnosticSignInfo",
+		"DiagnosticSignHint",
+		"DiagnosticVirtualTextError",
+		"DiagnosticVirtualTextWarn",
+		"DiagnosticVirtualTextInfo",
+		"DiagnosticVirtualTextHint",
+		"DiagnosticFloatingError",
+		"DiagnosticFloatingWarn",
+		"DiagnosticFloatingInfo",
+		"DiagnosticFloatingHint",
+		"DiagnosticUnderlineError",
+		"DiagnosticUnderlineWarn",
+		"DiagnosticUnderlineInfo",
+		"DiagnosticUnderlineHint",
 	}
 	for _, group in ipairs(diagnostic_groups) do
 		hi(group)
@@ -133,14 +144,13 @@ function M.apply()
 
 	-- Git signs — flat fg
 	local git_groups = {
-		"GitSignsAdd", "GitSignsChange", "GitSignsDelete",
-
+		"GitSignsAdd",
+		"GitSignsChange",
+		"GitSignsDelete",
 	}
 	for _, group in ipairs(git_groups) do
 		hi(group)
 	end
-
-
 
 	-- Oil — dark explorer
 	local oil_bg = mix(bg, fg, 0.02)
@@ -291,10 +301,20 @@ function M.apply()
 
 	-- DAP
 	local dap_groups = {
-		"DapBreakpoint", "DapBreakpointRejected", "DapStopped", "DapLogPoint",
-		"DapUIScope", "DapUIType", "DapUIValue", "DapUIModifiedValue",
-		"DapUIThread", "DapUIStoppedThread", "DapUIFrameName",
-		"DapUISource", "DapUILineNumber", "DapUIWinSelect",
+		"DapBreakpoint",
+		"DapBreakpointRejected",
+		"DapStopped",
+		"DapLogPoint",
+		"DapUIScope",
+		"DapUIType",
+		"DapUIValue",
+		"DapUIModifiedValue",
+		"DapUIThread",
+		"DapUIStoppedThread",
+		"DapUIFrameName",
+		"DapUISource",
+		"DapUILineNumber",
+		"DapUIWinSelect",
 	}
 	for _, group in ipairs(dap_groups) do
 		hi(group)
@@ -303,10 +323,31 @@ function M.apply()
 	-- Blink / nvim-cmp kind icons — all same fg
 	local kind_groups = {}
 	local kinds = {
-		"Text", "Method", "Function", "Constructor", "Field", "Variable",
-		"Class", "Interface", "Module", "Property", "Unit", "Value", "Enum",
-		"Keyword", "Snippet", "Color", "File", "Reference", "Folder",
-		"EnumMember", "Constant", "Struct", "Event", "Operator", "TypeParameter",
+		"Text",
+		"Method",
+		"Function",
+		"Constructor",
+		"Field",
+		"Variable",
+		"Class",
+		"Interface",
+		"Module",
+		"Property",
+		"Unit",
+		"Value",
+		"Enum",
+		"Keyword",
+		"Snippet",
+		"Color",
+		"File",
+		"Reference",
+		"Folder",
+		"EnumMember",
+		"Constant",
+		"Struct",
+		"Event",
+		"Operator",
+		"TypeParameter",
 	}
 	for _, kind in ipairs(kinds) do
 		kind_groups[#kind_groups + 1] = "BlinkCmpKind" .. kind

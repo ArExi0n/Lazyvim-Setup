@@ -10,7 +10,6 @@ return {
 				"json-lsp",
 				"tailwindcss-language-server",
 				"bash-language-server",
-				"rust-analyzer",
 				"gopls",
 				"css-lsp",
 				"html-lsp",
@@ -219,11 +218,6 @@ return {
 						},
 					},
 				},
-
-				rust_analyzer = {
-					enabled = false,
-				},
-
 				gopls = {
 					autostart = true,
 					settings = {
@@ -313,8 +307,10 @@ return {
 			require("neoconf").setup()
 
 			local ensure_installed = {}
-			for server, _ in pairs(opts.servers or {}) do
-				if server ~= "sourcekit" and server ~= "rust_analyzer" then
+			for server, server_opts in pairs(opts.servers or {}) do
+				if server ~= "sourcekit"
+					and vim.tbl_get(server_opts, "enabled") ~= false
+				then
 					table.insert(ensure_installed, server)
 				end
 			end
@@ -335,13 +331,6 @@ return {
 					end,
 				},
 			})
-
-			-- Kill any rust_analyzer client that managed to sneak in
-			vim.defer_fn(function()
-				for _, client in ipairs(vim.lsp.get_clients({ name = "rust_analyzer" })) do
-					client:stop()
-				end
-			end, 500)
 
 			-- Direct setup for sourcekit
 			local sk_opts = vim.tbl_deep_extend("force", opts.servers.sourcekit or {}, {

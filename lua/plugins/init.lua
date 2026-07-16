@@ -1,5 +1,4 @@
 return {
-  { import = "plugins.alpha" },
   { import = "plugins.colorscheme" },
   { import = "plugins.cpp" },
   { import = "plugins.fidget" },
@@ -16,8 +15,8 @@ return {
   { import = "plugins.telescope" },
   { import = "plugins.testing" },
   { import = "plugins.treesitter" },
-  { import = "plugins.ai" },
   { import = "plugins.snacks" },
+  { import = "plugins.ai" },
   { import = "plugins.trouble" },
   { import = "plugins.typst" },
   { import = "plugins.ui" },

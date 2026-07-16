@@ -39,7 +39,7 @@ return {
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"nvim-telescope/telescope.nvim",
-		"hrsh7th/nvim-cmp",
+		{ "hrsh7th/nvim-cmp", optional = true },
 	},
 	init = function()
 		local group = vim.api.nvim_create_augroup("salar-obsidian-markdown", { clear = true })
