@@ -6,6 +6,15 @@ function M.vault_root()
   return root and vim.fs.dirname(root)
 end
 
+function M.extract_all_covers()
+  local entries = M.scan_pdfs()
+  local count = 0
+  for _, entry in ipairs(entries) do
+    if M.extract_cover(entry.path, entry.id) then count = count + 1 end
+  end
+  vim.notify("Extracted " .. count .. "/" .. #entries .. " covers", vim.log.levels.INFO)
+end
+
 function M.books_dir()
   local root = M.vault_root()
   if not root then return nil end

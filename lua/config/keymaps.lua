@@ -31,7 +31,6 @@ vim.keymap.set("n", "<C-h>", "<Cmd>bprev<CR>", { desc = "Prev buffer" })
 vim.keymap.set("n", "[b", "<Cmd>bprev<CR>", { desc = "Prev buffer" })
 vim.keymap.set("n", "]b", "<Cmd>bnext<CR>", { desc = "Next buffer" })
 
-
 -- Oil toggle
 vim.keymap.set("n", "<leader>e", function()
 	if vim.bo.filetype == "oil" then
@@ -44,7 +43,9 @@ vim.keymap.set("n", "<leader>e", function()
 	else
 		vim.g.oil_prev_buf = vim.api.nvim_get_current_buf()
 		local dir = vim.fn.expand("%:p:h")
-		if dir == "" then dir = vim.fn.getcwd() end
+		if dir == "" then
+			dir = vim.fn.getcwd()
+		end
 		require("oil").open(dir)
 	end
 end, { desc = "Toggle file explorer" })
@@ -59,7 +60,6 @@ vim.keymap.set("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Go to p
 vim.keymap.set("n", "<leader>x", "<cmd>bdelete<CR>", { desc = "Close current buffer" })
 vim.keymap.set("n", "<leader>n", "<cmd>tabnew<CR>", { desc = "New tab" })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-
 
 -- Plenary test
 vim.api.nvim_set_keymap("n", "<leader>tf", "<Plug>PlenaryTestFile", { noremap = false, silent = false })
@@ -98,8 +98,10 @@ vim.keymap.set("n", "E", "e", { desc = "Forward to end of word" })
 vim.keymap.set("n", "a", "A", { desc = "Append at end of line" })
 vim.keymap.set("n", "A", "a", { desc = "Append after cursor" })
 
--- Better escape
-vim.keymap.set("i", "<C-c>", "<Esc>")
+-- Better quit
+vim.keymap.set("n", "<C-c>", function()
+	vim.cmd("wqa")
+end)
 
 -- Disable Ex mode
 vim.keymap.set("n", "Q", "<nop>")
@@ -174,70 +176,113 @@ vim.keymap.set(
 
 -- Toggle AI providers independently
 local ai_state = {
-  copilot = true,
-  supermaven = true,
+	copilot = true,
+	supermaven = true,
 }
 vim.keymap.set("n", "<leader>aid", function()
-  local label = function(name, enabled)
-    return (enabled and "[x] " or "[ ] ") .. name
-  end
-  local items = {
-    { label = label("Copilot", ai_state.copilot), key = "copilot" },
-    { label = label("Supermaven", ai_state.supermaven), key = "supermaven" },
-    { label = "---", key = "sep" },
-    { label = "Enable all", key = "enable_all" },
-    { label = "Disable all", key = "disable_all" },
-  }
-  vim.ui.select(items, {
-    prompt = "AI providers:",
-    format_item = function(item) return item.label end,
-  }, function(choice)
-    if not choice then return end
-    local function set_copilot(on)
-      pcall(function()
-        if on then require("copilot.suggestion").enable() else require("copilot.suggestion").disable() end
-      end)
-      ai_state.copilot = on
-    end
-    local function set_supermaven(on)
-      pcall(function()
-        if on then require("supermaven-nvim.api").start() else require("supermaven-nvim.api").stop() end
-      end)
-      ai_state.supermaven = on
-    end
-    if choice.key == "copilot" then
-      set_copilot(not ai_state.copilot)
-    elseif choice.key == "supermaven" then
-      set_supermaven(not ai_state.supermaven)
-    elseif choice.key == "enable_all" then
-      set_copilot(true); set_supermaven(true)
-    elseif choice.key == "disable_all" then
-      set_copilot(false); set_supermaven(false)
-    end
-    vim.notify(string.format("Copilot: %s, Supermaven: %s",
-      ai_state.copilot and "on" or "off",
-      ai_state.supermaven and "on" or "off"), vim.log.levels.INFO)
-  end)
+	local label = function(name, enabled)
+		return (enabled and "[x] " or "[ ] ") .. name
+	end
+	local items = {
+		{ label = label("Copilot", ai_state.copilot), key = "copilot" },
+		{ label = label("Supermaven", ai_state.supermaven), key = "supermaven" },
+		{ label = "---", key = "sep" },
+		{ label = "Enable all", key = "enable_all" },
+		{ label = "Disable all", key = "disable_all" },
+	}
+	vim.ui.select(items, {
+		prompt = "AI providers:",
+		format_item = function(item)
+			return item.label
+		end,
+	}, function(choice)
+		if not choice then
+			return
+		end
+		local function set_copilot(on)
+			pcall(function()
+				if on then
+					require("copilot.suggestion").enable()
+				else
+					require("copilot.suggestion").disable()
+				end
+			end)
+			ai_state.copilot = on
+		end
+		local function set_supermaven(on)
+			pcall(function()
+				if on then
+					require("supermaven-nvim.api").start()
+				else
+					require("supermaven-nvim.api").stop()
+				end
+			end)
+			ai_state.supermaven = on
+		end
+		if choice.key == "copilot" then
+			set_copilot(not ai_state.copilot)
+		elseif choice.key == "supermaven" then
+			set_supermaven(not ai_state.supermaven)
+		elseif choice.key == "enable_all" then
+			set_copilot(true)
+			set_supermaven(true)
+		elseif choice.key == "disable_all" then
+			set_copilot(false)
+			set_supermaven(false)
+		end
+		vim.notify(
+			string.format(
+				"Copilot: %s, Supermaven: %s",
+				ai_state.copilot and "on" or "off",
+				ai_state.supermaven and "on" or "off"
+			),
+			vim.log.levels.INFO
+		)
+	end)
 end, { desc = "Toggle AI provider(s)" })
 
 -- ========================
 -- LSP KEYMAPS
 -- ========================
-vim.keymap.set("n", "gd", function() vim.diagnostic.open_float() end, { desc = "Line diagnostics" })
-vim.keymap.set("n", "<leader>gd", function() vim.lsp.buf.definition() end, { desc = "Go to definition" })
-vim.keymap.set("n", "gD", function() vim.lsp.buf.declaration() end, { desc = "Go to declaration" })
-vim.keymap.set("n", "gi", function() vim.lsp.buf.implementation() end, { desc = "Go to implementation" })
-vim.keymap.set("n", "gr", function() vim.lsp.buf.references() end, { desc = "References" })
-vim.keymap.set("n", "H", function() vim.lsp.buf.hover() end, { desc = "Hover documentation" })
+vim.keymap.set("n", "gd", function()
+	vim.diagnostic.open_float()
+end, { desc = "Line diagnostics" })
+vim.keymap.set("n", "<leader>gd", function()
+	vim.lsp.buf.definition()
+end, { desc = "Go to definition" })
+vim.keymap.set("n", "gD", function()
+	vim.lsp.buf.declaration()
+end, { desc = "Go to declaration" })
+vim.keymap.set("n", "gi", function()
+	vim.lsp.buf.implementation()
+end, { desc = "Go to implementation" })
+vim.keymap.set("n", "gr", function()
+	vim.lsp.buf.references()
+end, { desc = "References" })
+vim.keymap.set("n", "H", function()
+	vim.lsp.buf.hover()
+end, { desc = "Hover documentation" })
 vim.keymap.set("n", "<leader>vws", function()
 	require("telescope.builtin").lsp_workspace_symbols()
 end, { desc = "Workspace symbols" })
-vim.keymap.set("n", "[d", function() vim.diagnostic.goto_prev() end, { desc = "Previous diagnostic" })
-vim.keymap.set("n", "]d", function() vim.diagnostic.goto_next() end, { desc = "Next diagnostic" })
-vim.keymap.set("n", "<leader>vca", function() vim.lsp.buf.code_action() end, { desc = "Code action" })
-vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, { desc = "References" })
-vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, { desc = "Rename symbol" })
-vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, { desc = "Signature help" })
+vim.keymap.set("n", "[d", function()
+	vim.diagnostic.goto_prev()
+end, { desc = "Previous diagnostic" })
+vim.keymap.set("n", "]d", function()
+	vim.diagnostic.goto_next()
+end, { desc = "Next diagnostic" })
+vim.keymap.set("n", "<leader>vca", function()
+	vim.lsp.buf.code_action()
+end, { desc = "Code action" })
+vim.keymap.set("n", "<leader>vrr", function()
+	vim.lsp.buf.references()
+end, { desc = "References" })
+vim.keymap.set("n", "<leader>vrn", function()
+	vim.lsp.buf.rename()
+end, { desc = "Rename symbol" })
+vim.keymap.set("i", "<C-h>", function()
+	vim.lsp.buf.signature_help()
+end, { desc = "Signature help" })
 
 vim.keymap.set("n", "<leader>f", function()
 	vim.lsp.buf.format({ async = true })
