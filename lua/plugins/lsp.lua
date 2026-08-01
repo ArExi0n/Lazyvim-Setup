@@ -43,7 +43,9 @@ return {
 			end)
 			mr.refresh(function()
 				local function install_tools(idx)
-					if idx > #opts.ensure_installed then return end
+					if idx > #opts.ensure_installed then
+						return
+					end
 					local p = mr.get_package(opts.ensure_installed[idx])
 					if not p:is_installed() then
 						local ok, err = pcall(p.install, p)
@@ -143,11 +145,15 @@ return {
 					root_dir = function(filename)
 						local util = require("lspconfig.util")
 						local root = util.root_pattern("buildServer.json", "Package.swift")(filename)
-						if root then return root end
+						if root then
+							return root
+						end
 						local dir = vim.fs.dirname(filename)
 						while dir and dir ~= "/" do
 							for entry, type in vim.fs.dir(dir) do
-								if type == "directory" and (entry:find("%.xcodeproj$") or entry:find("%.xcworkspace$")) then
+								if
+									type == "directory" and (entry:find("%.xcodeproj$") or entry:find("%.xcworkspace$"))
+								then
 									return dir
 								end
 							end
@@ -218,6 +224,7 @@ return {
 						},
 					},
 				},
+
 				gopls = {
 					autostart = true,
 					settings = {
@@ -229,11 +236,16 @@ return {
 					},
 				},
 
+				-- rust_analyzer is intentionally NOT configured here:
+				-- rustaceanvim (lazyvim.plugins.extras.lang.rust) manages it.
+				-- Setting it up via lspconfig too would attach a second
+				-- rust-analyzer client -> duplicate hints/definitions/diagnostics.
+
 				clangd = {
 					autostart = true,
 					cmd = {
-				"clangd",
-				"xcode-build-server",
+						"clangd",
+						"xcode-build-server",
 						"--background-index",
 						"--clang-tidy",
 						"--header-insertion=iwyu",
@@ -264,9 +276,15 @@ return {
 						local function notify(cmd, args)
 							client:exec_cmd({ command = cmd, arguments = args }, { bufnr = bufnr }, function(err, res)
 								if err then
-									vim.notify(string.format("tinymist: %s — %s", cmd, err.message), vim.log.levels.ERROR)
+									vim.notify(
+										string.format("tinymist: %s — %s", cmd, err.message),
+										vim.log.levels.ERROR
+									)
 								else
-									vim.notify(string.format("tinymist: %s — %s", cmd, vim.inspect(res)), vim.log.levels.INFO)
+									vim.notify(
+										string.format("tinymist: %s — %s", cmd, vim.inspect(res)),
+										vim.log.levels.INFO
+									)
 								end
 							end)
 						end
@@ -308,9 +326,7 @@ return {
 
 			local ensure_installed = {}
 			for server, server_opts in pairs(opts.servers or {}) do
-				if server ~= "sourcekit"
-					and vim.tbl_get(server_opts, "enabled") ~= false
-				then
+				if server ~= "sourcekit" and vim.tbl_get(server_opts, "enabled") ~= false then
 					table.insert(ensure_installed, server)
 				end
 			end
@@ -318,7 +334,9 @@ return {
 			require("mason-lspconfig").setup({
 				ensure_installed = ensure_installed,
 				automatic_installation = true,
-				automatic_enable = true,
+				-- rust_analyzer is handled by rustaceanvim, not lspconfig,
+				-- otherwise two rust-analyzer clients attach to every buffer.
+				automatic_enable = { exclude = { "rust_analyzer" } },
 				handlers = {
 					function(server_name)
 						local server_opts = opts.servers[server_name] or {}
@@ -357,10 +375,13 @@ return {
 				local c = clients[1]
 				local root = c.config.root_dir or "N/A"
 				local has_build_server = vim.fn.filereadable(root .. "/buildServer.json") == 1
-				vim.notify(string.format(
-					"sourcekit-lsp: running\n  Root: %s\n  buildServer.json: %s",
-					root, has_build_server and "yes" or "no"
-				))
+				vim.notify(
+					string.format(
+						"sourcekit-lsp: running\n  Root: %s\n  buildServer.json: %s",
+						root,
+						has_build_server and "yes" or "no"
+					)
+				)
 			end, { desc = "Check sourcekit-lsp status" })
 
 			vim.api.nvim_create_autocmd("LspAttach", {
@@ -388,21 +409,21 @@ return {
 					end, "LSP: Line diagnostics")
 					map("n", "[d", vim.diagnostic.goto_prev, "LSP: Previous diagnostic")
 					map("n", "]d", vim.diagnostic.goto_next, "LSP: Next diagnostic")
-				map("n", "<leader>vca", vim.lsp.buf.code_action, "LSP: Code action")
+					map("n", "<leader>vca", vim.lsp.buf.code_action, "LSP: Code action")
 					map({ "n", "x" }, "<leader>qf", function()
 						vim.lsp.buf.code_action({ context = { only = { "quickfix" } } })
 					end, "LSP: Quick fix")
-map("n", "<leader>vi", function()
-				local actions = vim.lsp.buf.code_action({
-					context = {
-						only = { "source.organizeImports", "source.addMissingImports", "source.fixAll" },
-					},
-				})
-				if not actions or vim.tbl_isempty(actions.result or {}) then
-					actions = vim.lsp.buf.code_action()
-				end
-			end, "LSP: Fix imports")
-				map("n", "<leader>vrr", vim.lsp.buf.references, "LSP: References")
+					map("n", "<leader>vi", function()
+						local actions = vim.lsp.buf.code_action({
+							context = {
+								only = { "source.organizeImports", "source.addMissingImports", "source.fixAll" },
+							},
+						})
+						if not actions or vim.tbl_isempty(actions.result or {}) then
+							actions = vim.lsp.buf.code_action()
+						end
+					end, "LSP: Fix imports")
+					map("n", "<leader>vrr", vim.lsp.buf.references, "LSP: References")
 					map("n", "<leader>vrn", vim.lsp.buf.rename, "LSP: Rename")
 					map("i", "<C-h>", vim.lsp.buf.signature_help, "LSP: Signature help")
 					map("n", "<leader>f", function()
@@ -439,6 +460,21 @@ map("n", "<leader>vi", function()
 				end,
 			})
 		end,
+	},
+
+	{
+		-- rustaceanvim (from lazyvim.plugins.extras.lang.rust) is the single
+		-- owner of rust-analyzer. Keep rust-analyzer settings here.
+		"mrcjkb/rustaceanvim",
+		opts = {
+			server = {
+				default_settings = {
+					["rust-analyzer"] = {
+						check = { command = "clippy" },
+					},
+				},
+			},
+		},
 	},
 
 	{
