@@ -200,23 +200,25 @@ vim.keymap.set("n", "<leader>aid", function()
 			return
 		end
 		local function set_copilot(on)
-			pcall(function()
-				if on then
-					require("copilot.suggestion").enable()
-				else
-					require("copilot.suggestion").disable()
-				end
-			end)
+			-- copilot.suggestion has no enable()/disable() — the real API is
+			-- copilot.command (same as :Copilot enable / :Copilot disable)
+			local ok, err = pcall(vim.cmd, "Copilot " .. (on and "enable" or "disable"))
+			if not ok then
+				vim.notify("Copilot toggle failed: " .. tostring(err), vim.log.levels.ERROR)
+			end
 			ai_state.copilot = on
 		end
 		local function set_supermaven(on)
-			pcall(function()
+			local ok, err = pcall(function()
 				if on then
 					require("supermaven-nvim.api").start()
 				else
 					require("supermaven-nvim.api").stop()
 				end
 			end)
+			if not ok then
+				vim.notify("Supermaven toggle failed: " .. tostring(err), vim.log.levels.ERROR)
+			end
 			ai_state.supermaven = on
 		end
 		if choice.key == "copilot" then
@@ -285,7 +287,12 @@ vim.keymap.set("i", "<C-h>", function()
 end, { desc = "Signature help" })
 
 vim.keymap.set("n", "<leader>f", function()
-	vim.lsp.buf.format({ async = true })
+	local ok, err = pcall(function()
+		require("conform").format({ async = true, lsp_fallback = true })
+	end)
+	if not ok then
+		vim.notify("Format failed: " .. tostring(err), vim.log.levels.ERROR)
+	end
 end, { desc = "Format buffer" })
 
 -- Cellular automaton
@@ -433,6 +440,26 @@ vim.keymap.set("n", "<leader>ou", new_obsidian_note("Uni", "uni-note.md", "Note 
 -- ========================
 -- USER COMMANDS
 -- ========================
+
+-- Fix shift-key typos: :W acts like :w, :Wqa like :wqa, etc. (supports ! and file args)
+for alias, cmd in pairs({
+	W = "w",
+	Wq = "wq",
+	WQ = "wq",
+	Wa = "wa",
+	WA = "wa",
+	Wqa = "wqa",
+	WQa = "wqa",
+	Q = "q",
+	Qa = "qa",
+	QA = "qa",
+}) do
+	vim.api.nvim_create_user_command(alias, function(opts)
+		local suffix = (opts.bang and "!" or "") .. (opts.args ~= "" and " " .. opts.args or "")
+		vim.cmd(cmd .. suffix)
+	end, { bang = true, nargs = "*", complete = "file", desc = "Alias for :" .. cmd })
+end
+
 vim.api.nvim_create_user_command("Bookshelf", function()
 	require("config.bookshelf").picker()
 end, { desc = "Browse bookshelf" })

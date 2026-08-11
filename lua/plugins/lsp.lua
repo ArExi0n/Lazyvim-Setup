@@ -33,32 +33,48 @@ return {
 		config = function(_, opts)
 			require("mason").setup(opts)
 			local mr = require("mason-registry")
-			mr:on("package:install:success", function()
-				vim.defer_fn(function()
-					require("lazy.core.handler.event").trigger({
-						event = "FileType",
-						buf = vim.api.nvim_get_current_buf(),
-					})
-				end, 100)
-			end)
 			mr.refresh(function()
-				local function install_tools(idx)
-					if idx > #opts.ensure_installed then
-						return
-					end
-					local p = mr.get_package(opts.ensure_installed[idx])
+				local to_install = {}
+				for _, name in ipairs(opts.ensure_installed) do
+					local p = mr.get_package(name)
 					if not p:is_installed() then
-						local ok, err = pcall(p.install, p)
-						if not ok then
-							vim.schedule(function()
-								install_tools(idx + 1)
-							end)
-						end
-					else
-						install_tools(idx + 1)
+						table.insert(to_install, p)
 					end
 				end
-				install_tools(1)
+				if #to_install == 0 then
+					return
+				end
+				vim.notify(
+					string.format("Mason: installing %d missing package(s)…", #to_install),
+					vim.log.levels.INFO
+				)
+				local installed = 0
+				local total = #to_install
+				local function install_next(idx)
+					if idx > #to_install then
+						vim.notify(
+							string.format("Mason: %d/%d packages installed successfully", installed, total),
+							vim.log.levels.INFO
+						)
+						vim.defer_fn(function()
+							require("lazy.core.handler.event").trigger({
+								event = "FileType",
+								buf = vim.api.nvim_get_current_buf(),
+							})
+						end, 100)
+						return
+					end
+					local p = to_install[idx]
+					p:install():once("closed", function()
+						if p:is_installed() then
+							installed = installed + 1
+						else
+							vim.notify("Mason: failed to install " .. p.name, vim.log.levels.WARN)
+						end
+						install_next(idx + 1)
+					end)
+				end
+				install_next(1)
 			end)
 		end,
 	},
@@ -427,8 +443,13 @@ return {
 					map("n", "<leader>vrn", vim.lsp.buf.rename, "LSP: Rename")
 					map("i", "<C-h>", vim.lsp.buf.signature_help, "LSP: Signature help")
 					map("n", "<leader>f", function()
-						vim.lsp.buf.format({ async = true })
-					end, "LSP: Format")
+						local ok, err = pcall(function()
+							require("conform").format({ async = true, lsp_fallback = true })
+						end)
+						if not ok then
+							vim.notify("Format failed: " .. tostring(err), vim.log.levels.ERROR)
+						end
+					end, "Format buffer")
 
 					local sk = vim.lsp.get_clients({ bufnr = bufnr, name = "sourcekit" })
 					if #sk > 0 then
@@ -479,26 +500,15 @@ return {
 
 	{
 		"mfussenegger/nvim-lint",
-		event = { "BufReadPre", "BufNewFile" },
-		config = function()
-			local lint = require("lint")
-			lint.linters_by_ft = {
-				javascript = { "eslint" },
-				typescript = { "eslint" },
-				javascriptreact = { "eslint" },
-				typescriptreact = { "eslint" },
+		-- LazyVim's base linting.lua already sets this up with autocmds and debouncing.
+		-- We extend its opts instead of replacing the config to avoid double-firing.
+		opts = {
+			linters_by_ft = {
 				swift = { "swiftlint" },
 				lua = { "luacheck" },
 				sh = { "shellcheck" },
-			}
-			local group = vim.api.nvim_create_augroup("lint", { clear = true })
-			vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-				group = group,
-				callback = function()
-					lint.try_lint()
-				end,
-			})
-		end,
+			},
+		},
 	},
 
 	{
@@ -527,9 +537,10 @@ return {
 				ruby = { "rubocop" },
 			},
 			format_on_save = {
-				timeout_ms = 500,
+				timeout_ms = 2000,
 				lsp_fallback = true,
 			},
+			notify_on_error = true,
 		},
 	},
 
