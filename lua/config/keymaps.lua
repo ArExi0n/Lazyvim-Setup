@@ -118,6 +118,10 @@ vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz", { desc = "Next location" })
 vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz", { desc = "Previous location" })
 vim.keymap.set("n", "<leader>tt", "<cmd>Trouble quickfix toggle<cr>", { desc = "Toggle trouble quickfix" })
 vim.keymap.set("n", "<leader>qx", "<cmd>Telescope quickfix<cr>", { desc = "Show quickfix list" })
+vim.keymap.set("n", "<leader>qe", function()
+	vim.diagnostic.setqflist({ open = false })
+	vim.notify("Quickfix: buffer diagnostics", vim.log.levels.INFO)
+end, { desc = "Buffer diagnostics to quickfix" })
 
 -- Replace word under cursor (whole file) — prompts for replacement word
 vim.keymap.set("n", "<leader>s", function()

@@ -21,6 +21,7 @@ return {
 	-- Refactoring tool
 	{
 		"ThePrimeagen/refactoring.nvim",
+		dependencies = { "lewis6991/async.nvim" },
 		keys = {
 			{
 				"<leader>r",

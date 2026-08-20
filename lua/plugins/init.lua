@@ -9,6 +9,7 @@ return {
   { import = "plugins.lsp" },
   { import = "plugins.neoconf" },
   { import = "plugins.obsidian" },
+  { import = "plugins.python" },
   { import = "plugins.nvim-dap" },
   { import = "plugins.nvim-dapui" },
   { import = "plugins.refactoring" },

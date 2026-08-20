@@ -92,16 +92,12 @@ return {
 			},
 
 			-- Text objects
+			-- NOTE: select keymaps (af/if/ac/ic/ao/io) are handled by LazyVim's
+			-- mini.ai (coding.lua). Defining them here too causes conflicts.
+			-- Only move keymaps are registered via treesitter-textobjects.
 			textobjects = {
 				select = {
-					enable = true,
-					lookahead = true,
-					keymaps = {
-						["af"] = "@function.outer",
-						["if"] = "@function.inner",
-						["ac"] = "@class.outer",
-						["ic"] = "@class.inner",
-					},
+					enable = false,
 				},
 				move = {
 					enable = true,

@@ -14,6 +14,14 @@ require("config.options")
 
 require("config.lazy")
 
+-- Load user keymaps after LazyVim's defaults (VeryLazy) so they win conflicts
+vim.api.nvim_create_autocmd("User", {
+	pattern = "VeryLazy",
+	callback = function()
+		require("config.keymaps")
+	end,
+})
+
 require("config.theme").setup({
 	default = "koda",
 })

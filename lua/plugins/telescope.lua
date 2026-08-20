@@ -90,6 +90,13 @@ return {
 				desc = "Diagnostics",
 			},
 			{
+				";E",
+				function()
+					require("telescope.builtin").diagnostics({ bufnr = 0 })
+				end,
+				desc = "File diagnostics",
+			},
+			{
 				";s",
 				function()
 					require("telescope.builtin").treesitter()

@@ -28,6 +28,7 @@ return {
 				"ktlint",
 				"taplo",
 				"rubocop",
+				"pyright",
 			})
 		end,
 		config = function(_, opts)
@@ -245,9 +246,13 @@ return {
 					autostart = true,
 					settings = {
 						gopls = {
-							analyses = { unusedparams = true },
-							staticcheck = true,
 							gofumpt = true,
+							ui = {
+								diagnostic = {
+									staticcheck = true,
+									analyses = { unusedparams = true },
+								},
+							},
 						},
 					},
 				},
@@ -320,6 +325,72 @@ return {
 							local pdf = vim.fn.expand("%:r") .. ".pdf"
 							vim.fn.jobstart({ "sioyek", pdf }, { detach = true })
 						end, { buffer = bufnr, desc = "Typst: open in sioyek" })
+					end,
+				},
+
+				pyright = {
+					autostart = true,
+					single_file_support = true,
+					root_dir = function(...)
+						return require("lspconfig.util").root_pattern(
+							"pyproject.toml",
+							"setup.py",
+							"setup.cfg",
+							"requirements.txt",
+							".git"
+						)(...) or vim.fn.getcwd()
+					end,
+					settings = {
+						python = {
+							analysis = {
+								autoSearchPaths = true,
+								diagnosticMode = "workspace",
+								useLibraryCodeForTypes = true,
+								typeCheckingMode = "basic",
+								reportWildcardImportFromLibrary = "none",
+								reportMissingTypeStubs = "none",
+								reportMissingImports = "warning",
+								reportUnusedImport = "warning",
+								reportUntypedBaseClass = "none",
+								reportUnknownArgumentType = "none",
+								reportUnknownMemberType = "none",
+								reportUnknownVariableType = "none",
+								reportUnknownParameterType = "none",
+								reportUnknownLambdaType = "none",
+								reportCallIssue = "none",
+								reportAttributeAccessIssue = "none",
+								reportArgumentType = "none",
+								reportOperatorIssue = "none",
+								reportOptionalIterable = "none",
+								reportOptionalMemberAccess = "none",
+								reportPrivateUsage = "none",
+							},
+						},
+					},
+					on_new_config = function(config, root_dir)
+						config.settings = config.settings or {}
+						config.settings.python = config.settings.python or {}
+						local candidates = {
+							root_dir .. "/.venv/bin/python",
+							root_dir .. "/venv/bin/python",
+						}
+						for _, py in ipairs(candidates) do
+							if vim.uv.fs_stat(py) then
+								config.settings.python.pythonPath = py
+								config.settings.python.venvPath = root_dir
+								config.settings.python.venv = vim.fs.basename(vim.fs.dirname(py))
+								break
+							end
+						end
+						if not config.settings.python.pythonPath then
+							config.settings.python.pythonPath = vim.fn.exepath("python3") or "/usr/bin/python3"
+						end
+					end,
+					on_attach = function(_, bufnr)
+						vim.bo[bufnr].tabstop = 4
+						vim.bo[bufnr].shiftwidth = 4
+						vim.bo[bufnr].expandtab = true
+						vim.bo[bufnr].softtabstop = 4
 					end,
 				},
 			},
@@ -507,6 +578,7 @@ return {
 				swift = { "swiftlint" },
 				lua = { "luacheck" },
 				sh = { "shellcheck" },
+				python = { "ruff" },
 			},
 		},
 	},
