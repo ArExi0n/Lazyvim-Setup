@@ -22,6 +22,20 @@ vim.api.nvim_create_autocmd("User", {
 	end,
 })
 
+-- Safety net: lazy.nvim fires VeryLazy on UIEnter, but UIEnter never fires in
+-- some environments (nvim --headless, some nvim 0.12 UI-attach timings).
+-- Without it, all event = "VeryLazy" plugins (mini.ai textobjects, which-key,
+-- fidget, flash, ...) never load. Fire it on VimEnter if it hasn't fired yet.
+vim.api.nvim_create_autocmd("VimEnter", {
+	callback = function()
+		vim.defer_fn(function()
+			if not vim.g.did_very_lazy then
+				vim.api.nvim_exec_autocmds("User", { pattern = "VeryLazy", modeline = false })
+			end
+		end, 300)
+	end,
+})
+
 require("config.theme").setup({
 	default = "koda",
 })
