@@ -262,6 +262,9 @@ return {
 				-- Setting it up via lspconfig too would attach a second
 				-- rust-analyzer client -> duplicate hints/definitions/diagnostics.
 
+				-- bacon_ls is disabled - rustaceanvim manages rust-analyzer
+				bacon_ls = { enabled = false },
+
 				clangd = {
 					autostart = true,
 					cmd = {
@@ -423,7 +426,7 @@ return {
 				automatic_installation = true,
 				-- rust_analyzer is handled by rustaceanvim, not lspconfig,
 				-- otherwise two rust-analyzer clients attach to every buffer.
-				automatic_enable = { exclude = { "rust_analyzer" } },
+				automatic_enable = { exclude = { "rust_analyzer", "bacon_ls" } },
 				handlers = {
 					function(server_name)
 						local server_opts = opts.servers[server_name] or {}
@@ -562,7 +565,7 @@ return {
 			server = {
 				default_settings = {
 					["rust-analyzer"] = {
-						check = { command = "clippy" },
+						check = { command = "check" },
 					},
 				},
 			},
