@@ -54,6 +54,11 @@ end, { desc = "Toggle file explorer" })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
+-- my keypreferences for word motion
+vim.keymap.set("n", "vw", "viw")
+vim.keymap.set("n", "dw", "diw")
+vim.keymap.set("n", "yw", "yiw")
+
 -- tab management
 vim.keymap.set("n", "<Tab>", "<cmd>BufferLineCycleNext<CR>", { desc = "Go to next buffer" })
 vim.keymap.set("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Go to previous buffer" })
