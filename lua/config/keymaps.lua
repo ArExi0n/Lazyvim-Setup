@@ -58,6 +58,12 @@ vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.keymap.set("n", "vw", "viw")
 vim.keymap.set("n", "dw", "diw")
 vim.keymap.set("n", "yw", "yiw")
+vim.keymap.set("n", "vb", "vie")
+vim.keymap.set("n", "db", "die")
+vim.keymap.set("n", "yb", "yie")
+vim.keymap.set("n", "vW", "viW")
+vim.keymap.set("n", "dW", "diW")
+vim.keymap.set("n", "yW", "yiW")
 
 -- tab management
 vim.keymap.set("n", "<Tab>", "<cmd>BufferLineCycleNext<CR>", { desc = "Go to next buffer" })
