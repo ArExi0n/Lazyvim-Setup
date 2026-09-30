@@ -56,6 +56,10 @@ M.items = {
 		schemes = { "sonokai" },
 	},
 	{
+		repo = "b0o/vague.nvim",
+		schemes = { "vague" },
+	},
+	{
 		repo = "Mofiqul/dracula.nvim",
 		schemes = { "dracula", "dracula-soft" },
 	},

@@ -28,9 +28,6 @@ local function close()
 end
 
 function M.update()
-  if vim.diagnostic.is_enabled and not vim.diagnostic.is_enabled() then
-    return close()
-  end
 
   local bufnr = vim.api.nvim_get_current_buf()
   local ft = vim.bo[bufnr].filetype

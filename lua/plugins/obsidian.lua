@@ -2,7 +2,7 @@ return {
 	"epwalsh/obsidian.nvim",
 	version = "*",
 	lazy = true,
-	ft = "markdown",
+	ft = { "markdown", "typst" },
 	cmd = {
 		"ObsidianBacklinks",
 		"ObsidianDailies",
@@ -58,5 +58,6 @@ return {
 	config = function(_, opts)
 		require("obsidian").setup(opts)
 		require("config.obsidian").patch_template_substitutions()
+		require("config.obsidian").setup_typst_template()
 	end,
 }

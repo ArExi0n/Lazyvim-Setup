@@ -135,6 +135,18 @@ vim.keymap.set("n", "<leader>qe", function()
 	vim.notify("Quickfix: buffer diagnostics", vim.log.levels.INFO)
 end, { desc = "Buffer diagnostics to quickfix" })
 
+-- Fallbacks for buffers with no LSP attached (the real buffer-local maps are
+-- created on LspAttach and take precedence): say so instead of doing nothing.
+for lhs, what in pairs({ ["<leader>qf"] = "quick fix", ["<leader>vi"] = "fix imports" }) do
+	vim.keymap.set("n", lhs, function()
+		if #vim.lsp.get_clients({ bufnr = 0 }) == 0 then
+			vim.notify("No LSP attached here — " .. what .. " unavailable", vim.log.levels.WARN)
+		else
+			vim.notify("LSP attached but buffer maps not ready — reopen the file", vim.log.levels.WARN)
+		end
+	end, { desc = "LSP: " .. what .. " (no LSP attached)" })
+end
+
 -- Replace word under cursor (whole file) — prompts for replacement word
 vim.keymap.set("n", "<leader>s", function()
 	local old = vim.fn.expand("<cword>")
@@ -523,3 +535,16 @@ vim.keymap.set("n", "<leader>bd", function()
 		end
 	end)
 end, { desc = "Bookshelf: edit book description" })
+
+-- ========================
+-- TYPST TEMPLATE (vault: Extra/Template/typst.typ)
+-- ========================
+-- <leader>ot (ObsidianTemplate picker) now also loads in typst buffers (see
+-- lua/plugins/obsidian.lua ft) so typst.typ is selectable there.
+-- The helpers below make the same template available without the picker:
+--   :TypstTemplate   insert template at cursor
+--   :r typst.typ     literal read works from any cwd (cmdline abbrev)
+--   new *.typ file   auto-prefilled via BufNewFile
+pcall(function()
+	require("config.obsidian").setup_typst_template()
+end)

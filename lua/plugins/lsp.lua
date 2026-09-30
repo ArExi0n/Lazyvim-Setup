@@ -500,18 +500,119 @@ return {
 					map("n", "[d", vim.diagnostic.goto_prev, "LSP: Previous diagnostic")
 					map("n", "]d", vim.diagnostic.goto_next, "LSP: Next diagnostic")
 					map("n", "<leader>vca", vim.lsp.buf.code_action, "LSP: Code action")
+
+					-- Filtered code actions, without ever going silent: if the
+					-- server offers nothing of that kind here (e.g. missing
+					-- imports are `source.*`, not `quickfix`), say so and fall
+					-- back to the full action list instead of showing nothing.
+					local function filtered_code_action(only, empty_msg)
+					local bufnr = vim.api.nvim_get_current_buf()
+					local clients = vim.lsp.get_clients({ bufnr = bufnr })
+					if #clients == 0 then
+						vim.notify("No LSP client attached — no code actions available", vim.log.levels.WARN)
+						return
+					end
+					local params = vim.lsp.util.make_range_params(0, clients[1].offset_encoding or "utf-8")
+					params.context = {
+						only = only,
+						triggerKind = vim.lsp.protocol.CodeActionTriggerKind.Invoked,
+						diagnostics = vim.tbl_map(function(d)
+							return d.user_data and d.user_data.lsp or d
+						end, vim.diagnostic.get(bufnr)),
+					}
+					local function kind_wanted(kind)
+						if not kind then
+							return false
+						end
+						for _, o in ipairs(only) do
+							if kind == o or vim.startswith(kind, o .. ".") then
+								return true
+							end
+						end
+						return false
+					end
+					local function apply_action(action, client, ctx)
+						if action.edit then
+							vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding)
+						end
+						local a_cmd = action.command
+						if a_cmd then
+							client:exec_cmd(type(a_cmd) == "table" and a_cmd or action, ctx)
+						end
+					end
+					local function on_user_choice(choice)
+						if not choice then
+							return
+						end
+						local client = assert(vim.lsp.get_client_by_id(choice.ctx.client_id))
+						local action = choice.action
+						local cbuf = assert(choice.ctx.bufnr, "Must have buffer number")
+						if type(action.title) == "string" and type(action.command) == "string" then
+							apply_action(action, client, choice.ctx)
+							return
+						end
+						if action.disabled then
+							vim.notify(action.disabled.reason, vim.log.levels.ERROR)
+							return
+						end
+						if not (action.edit and action.command) and client:supports_method("codeAction/resolve") then
+							client:request("codeAction/resolve", action, function(err, resolved)
+								if err then
+									if action.edit or action.command then
+										apply_action(action, client, choice.ctx)
+									else
+										vim.notify(err.code .. ": " .. err.message, vim.log.levels.ERROR)
+									end
+								else
+									apply_action(resolved, client, choice.ctx)
+								end
+							end, cbuf)
+						else
+							apply_action(action, client, choice.ctx)
+						end
+					end
+					local function format_item(item)
+						local title = item.action.title:gsub("\r\n", "\\r\\n"):gsub("\n", "\\n")
+						if item.action.disabled then
+							title = title .. " (disabled)"
+						end
+						if #vim.lsp.get_clients({ bufnr = item.ctx.bufnr }) == 1 then
+							return title
+						end
+						local source = assert(vim.lsp.get_client_by_id(item.ctx.client_id)).name
+						return ("%s [%s]"):format(title, source)
+					end
+					vim.lsp.buf_request_all(bufnr, "textDocument/codeAction", params, function(results)
+						local actions = {}
+						for _, r in pairs(results or {}) do
+							for _, action in pairs(r.result or {}) do
+								-- servers may ignore `only`; enforce it client-side
+								if kind_wanted(action.kind) then
+									table.insert(actions, { action = action, ctx = r.context })
+								end
+							end
+						end
+						if vim.tbl_isempty(actions) then
+							vim.notify(empty_msg, vim.log.levels.INFO)
+							vim.lsp.buf.code_action()
+							return
+						end
+						vim.ui.select(actions, {
+							prompt = "Code actions:",
+							kind = "codeaction",
+							format_item = format_item,
+						}, on_user_choice)
+					end)
+					end
+
 					map({ "n", "x" }, "<leader>qf", function()
-						vim.lsp.buf.code_action({ context = { only = { "quickfix" } } })
+					filtered_code_action({ "quickfix" }, "No quickfix actions here — showing all code actions")
 					end, "LSP: Quick fix")
 					map("n", "<leader>vi", function()
-						local actions = vim.lsp.buf.code_action({
-							context = {
-								only = { "source.organizeImports", "source.addMissingImports", "source.fixAll" },
-							},
-						})
-						if not actions or vim.tbl_isempty(actions.result or {}) then
-							actions = vim.lsp.buf.code_action()
-						end
+					filtered_code_action(
+						{ "source.organizeImports", "source.addMissingImports", "source.fixAll" },
+						"No organize-imports actions from LSP — showing all code actions"
+					)
 					end, "LSP: Fix imports")
 					map("n", "<leader>vrr", vim.lsp.buf.references, "LSP: References")
 					map("n", "<leader>vrn", vim.lsp.buf.rename, "LSP: Rename")

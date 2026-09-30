@@ -131,9 +131,17 @@ return {
 		lazy = true,
 		priority = 100,
 	},
-	{
-		"nyoom-engineering/oxocarbon.nvim",
+{
+		"sainnhe/sonokai",
 		lazy = true,
 		priority = 100,
+	},
+	{
+		"vague-theme/vague.nvim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			vim.cmd.colorscheme("vague")
+		end,
 	},
 }

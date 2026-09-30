@@ -442,4 +442,97 @@ function M.opts()
 	}
 end
 
+--- Absolute path to Extra/Template/typst.typ in the first workspace that has it.
+---@return string|nil
+function M.typst_template_path()
+	for _, workspace in ipairs(M.workspaces()) do
+		if type(workspace.path) == "string" then
+			local candidate = vim.fs.joinpath(expand(workspace.path), "Extra", "Template", "typst.typ")
+			if vim.fn.filereadable(candidate) == 1 then
+				return candidate
+			end
+		end
+	end
+	return nil
+end
+
+--- Insert typst.typ template into current buffer.
+--- If the buffer is empty it replaces the empty line, otherwise inserts below cursor.
+function M.insert_typst_template()
+	local template = M.typst_template_path()
+	if not template then
+		vim.notify("typst.typ template not found in Extra/Template", vim.log.levels.ERROR)
+		return
+	end
+	local lines = vim.fn.readfile(template)
+	if #lines == 0 then
+		vim.notify("typst.typ template is empty", vim.log.levels.WARN)
+		return
+	end
+	local bufnr = vim.api.nvim_get_current_buf()
+	local line_count = vim.api.nvim_buf_line_count(bufnr)
+	local cursor = vim.api.nvim_win_get_cursor(0)
+	local row = cursor[1]
+	-- Empty buffer (single empty line): replace it so we don't leave a leading blank line.
+	if line_count == 1 and vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] == "" then
+		vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, lines)
+		vim.api.nvim_win_set_cursor(0, { #lines, 0 })
+	else
+		vim.api.nvim_buf_set_lines(bufnr, row, row, false, lines)
+		vim.api.nvim_win_set_cursor(0, { row + #lines, 0 })
+	end
+end
+
+--- Wire up :TypstTemplate, BufNewFile *.typ and `:r typst.typ` expansion.
+function M.setup_typst_template()
+	if vim.g.salar_typst_template_setup then
+		return
+	end
+	vim.g.salar_typst_template_setup = true
+
+	vim.api.nvim_create_user_command("TypstTemplate", function()
+		M.insert_typst_template()
+	end, { desc = "Insert Extra/Template/typst.typ" })
+
+	-- New *.typ files start from the template (BufNewFile only, so existing files are untouched).
+	local group = vim.api.nvim_create_augroup("salar-typst-template", { clear = true })
+	vim.api.nvim_create_autocmd("BufNewFile", {
+		group = group,
+		pattern = "*.typ",
+		callback = function()
+			-- Only prefill empty new buffers.
+			if vim.api.nvim_buf_line_count(0) == 1 and vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] == "" then
+				M.insert_typst_template()
+			end
+		end,
+	})
+
+	-- Make the literal `:r typst.typ` work from any cwd by rewriting it to the
+	-- vault template on <CR>. (cnoreabbrev can't be used: its lhs must be
+	-- keyword chars, so `typst.typ` with a dot is rejected with E474.)
+	vim.keymap.set("c", "<CR>", function()
+		if vim.fn.getcmdtype() == ":" then
+			local line = vim.fn.getcmdline()
+			-- Match `:r typst.typ` / `:read typst.typ` with optional range
+			-- (`0r`, `'<,'>r`, `%r`, ...). The `r`/`read` must not be part of
+			-- a longer word, but may follow a range char like `0`, `$`, `%`, `'`, `>`, `,`.
+			local is_read = line:match("^%s*r%s+typst%.typ%s*$")
+				or line:match("[^%a]r%s+typst%.typ%s*$")
+				or line:match("^%s*read%s+typst%.typ%s*$")
+				or line:match("[^%a]read%s+typst%.typ%s*$")
+			if is_read then
+				-- Respect a real ./typst.typ in cwd if one exists.
+				if vim.fn.filereadable("typst.typ") == 0 then
+					local template = M.typst_template_path()
+					if template then
+						local expanded = line:gsub("typst%.typ%s*$", vim.fn.fnameescape(template))
+						vim.fn.setcmdline(expanded)
+					end
+				end
+			end
+		end
+		return "<CR>"
+	end, { expr = true, desc = "Expand :r typst.typ to vault template" })
+end
+
 return M

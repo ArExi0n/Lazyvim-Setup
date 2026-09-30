@@ -41,7 +41,9 @@ local function apply(name, opts)
 		return false
 	end
 
-	koda.setup(name)
+	if not name:match("^koda") then
+		koda.setup(name)
+	end
 
 	local ok, err = pcall(vim.cmd.colorscheme, name)
 	if not ok then
