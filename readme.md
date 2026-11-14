@@ -247,3 +247,6 @@
 | `h` (file browser) | Go to parent directory |
 | `t` (oil) | Open in tab |
 | `q` / `<Esc>` (dapui float) | Close floating window |
+
+last cry
+
