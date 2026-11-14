@@ -30,11 +30,6 @@ function M.apply()
 		)
 	end
 
-	local cursor_bg = mix(bg, fg, 0.04)
-	local visual_bg = mix(bg, fg, 0.12)
-	local select_bg = mix(bg, fg, 0.20)
-	local popup_bg = mix(bg, fg, 0.08)
-
 	-- Core UI — transparent
 	hi("Normal")
 	hi("NormalNC")
@@ -42,8 +37,8 @@ function M.apply()
 	hi("EndOfBuffer")
 
 	-- Cursor / Line
-	hi("CursorLine", { bg = cursor_bg })
-	hi("CursorColumn", { bg = cursor_bg })
+	hi("CursorLine")
+	hi("CursorColumn")
 	hi("Cursor", { bg = mix(bg, fg, 0.5), fg = mix(fg, bg, 0.5) })
 	hi("lCursor", { bg = mix(bg, fg, 0.5), fg = mix(fg, bg, 0.5) })
 	hi("CursorLineNr")
@@ -51,27 +46,27 @@ function M.apply()
 	hi("LineNrAbove")
 	hi("LineNrBelow")
 
-	-- Selection / Search
-	hi("Visual", { bg = visual_bg })
-	hi("VisualNOS", { bg = visual_bg })
-	hi("Search", { fg = fg, bg = mix(bg, fg, 0.3) })
-	hi("IncSearch", { fg = bg, bg = fg })
-	hi("CurSearch", { fg = bg, bg = fg })
-	hi("Substitute", { bg = select_bg })
+	-- Selection / Search (transparent bg; reverse keeps them visible)
+	hi("Visual", { reverse = true })
+	hi("VisualNOS", { reverse = true })
+	hi("Search", { reverse = true })
+	hi("IncSearch", { reverse = true })
+	hi("CurSearch", { reverse = true })
+	hi("Substitute", { reverse = true })
 	hi("MatchParen", { bold = true })
-	hi("QuickFixLine", { bg = visual_bg })
+	hi("QuickFixLine", { bold = true })
 
-	-- Popup menu
-	hi("Pmenu", { bg = popup_bg })
-	hi("PmenuSel", { bg = select_bg })
-	hi("PmenuSbar", { bg = visual_bg })
-	hi("PmenuThumb", { bg = popup_bg })
+	-- Popup menu — transparent, no bg (suggestion block, like sylvan floats)
+	hi("Pmenu")
+	hi("PmenuSel", { bold = true })
+	hi("PmenuSbar")
+	hi("PmenuThumb")
 
 	-- Tabs / Status / Separators
-	hi("TabLine", { bg = popup_bg })
-	hi("TabLineSel", { bg = cursor_bg })
+	hi("TabLine")
+	hi("TabLineSel", { bold = true })
 	hi("TabLineFill")
-	hi("StatusLine", { bg = cursor_bg })
+	hi("StatusLine")
 	hi("StatusLineNC")
 	hi("WinSeparator")
 	hi("VertSplit")
@@ -84,7 +79,7 @@ function M.apply()
 	hi("SignColumn")
 	hi("Folded")
 	hi("FoldColumn")
-	hi("ColorColumn", { bg = cursor_bg })
+	hi("ColorColumn")
 	hi("SpecialKey")
 	hi("NonText")
 	hi("Whitespace")
@@ -98,11 +93,11 @@ function M.apply()
 	hi("WarningMsg")
 	hi("ErrorMsg")
 
-	-- Diff (background only)
-	hi("DiffAdd", { bg = cursor_bg })
-	hi("DiffChange", { bg = visual_bg })
-	hi("DiffDelete", { bg = popup_bg })
-	hi("DiffText", { bg = select_bg })
+	-- Diff (transparent bg; bold keeps the changed text readable)
+	hi("DiffAdd")
+	hi("DiffChange")
+	hi("DiffDelete")
+	hi("DiffText", { bold = true })
 
 	-- Spell
 	hi("SpellBad", { sp = mix(bg, fg, 0.5), undercurl = true })
@@ -138,9 +133,9 @@ function M.apply()
 	end
 
 	-- LSP
-	hi("LspReferenceText", { bg = cursor_bg })
-	hi("LspReferenceRead", { bg = cursor_bg })
-	hi("LspReferenceWrite", { bg = visual_bg })
+	hi("LspReferenceText")
+	hi("LspReferenceRead")
+	hi("LspReferenceWrite")
 
 	-- Git signs — flat fg
 	local git_groups = {
@@ -152,14 +147,12 @@ function M.apply()
 		hi(group)
 	end
 
-	-- Oil — dark explorer
-	local oil_bg = mix(bg, fg, 0.02)
-	local oil_cursor = mix(bg, fg, 0.06)
+	-- Oil — transparent
 	local oil_hl = mix(bg, fg, 0.10)
 	local oil_dim = mix(bg, fg, 0.3)
 	local oil_bright = mix(bg, fg, 0.7)
-	hi("OilNormal", { bg = oil_bg })
-	hi("OilCursorline", { bg = oil_cursor })
+	hi("OilNormal")
+	hi("OilCursorline")
 	hi("OilDir", { bold = true })
 	hi("OilDirIcon", { bold = true })
 	hi("OilDirHidden", { fg = oil_dim })
@@ -211,7 +204,7 @@ function M.apply()
 	hi("TelescopePreviewNormal")
 	hi("TelescopePreviewBorder")
 	hi("TelescopePreviewTitle")
-	hi("TelescopeSelection", { bg = visual_bg, bold = true })
+	hi("TelescopeSelection", { bold = true })
 	hi("TelescopeMatching", { bold = true })
 
 	-- Bufferline — transparent
@@ -364,10 +357,9 @@ function M.apply()
 
 	-- Lualine
 	local lualine_mode_fg = mix(fg, bg, 0.2)
-	local lualine_mode_bg = mix(bg, fg, 0.2)
 	for _, mode in ipairs({ "normal", "insert", "visual", "replace", "command" }) do
-		hi("lualine_a_" .. mode, { fg = lualine_mode_fg, bg = lualine_mode_bg, bold = true })
-		hi("lualine_b_" .. mode, { bg = cursor_bg })
+		hi("lualine_a_" .. mode, { fg = lualine_mode_fg, bold = true })
+		hi("lualine_b_" .. mode)
 		hi("lualine_c_" .. mode)
 	end
 	hi("lualine_a_inactive")

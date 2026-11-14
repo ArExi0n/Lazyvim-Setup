@@ -3,32 +3,25 @@ return {
 		"mason-org/mason.nvim",
 		opts = function(_, opts)
 			opts.ensure_installed = opts.ensure_installed or {}
+			-- Minimal set (fast startup, no overwork). Everything else that was
+			-- here before (css/html/tailwind, clangd, zls, pyright, ruff,
+			-- stylua, shfmt, shellcheck, ktlint, taplo, rubocop, ...) is
+			-- intentionally NOT ensured. Binaries already on disk stay usable.
 			vim.list_extend(opts.ensure_installed, {
 				"typescript-language-server",
 				"eslint-lsp",
 				"lua-language-server",
 				"json-lsp",
-				"tailwindcss-language-server",
 				"bash-language-server",
 				"gopls",
-				"css-lsp",
-				"html-lsp",
-				"swiftformat",
-				"swiftlint",
-				"luacheck",
-				"shellcheck",
+				"tinymist",
+				"harper-ls",
+				-- luacheck is brew-provided (/opt/homebrew/bin/luacheck), not mason-managed
 				"prettier",
-				"clangd",
-				"xcode-build-server",
-				"stylua",
-				"shfmt",
-				"ruff",
 				"gofumpt",
 				"goimports",
-				"ktlint",
-				"taplo",
-				"rubocop",
-				"pyright",
+				"swiftformat",
+				"swiftlint",
 			})
 		end,
 		config = function(_, opts)
@@ -192,32 +185,7 @@ return {
 
 				jsonls = { autostart = true },
 				bashls = { autostart = true },
-				cssls = { autostart = true },
-				html = { autostart = true },
-
-				tailwindcss = {
-					autostart = true,
-					root_dir = function(...)
-						return require("lspconfig.util").root_pattern(
-							"tailwind.config.js",
-							"tailwind.config.ts",
-							"postcss.config.js",
-							"postcss.config.ts",
-							".git"
-						)(...)
-					end,
-					filetypes = {
-						"html",
-						"css",
-						"scss",
-						"javascript",
-						"javascriptreact",
-						"typescript",
-						"typescriptreact",
-						"vue",
-						"svelte",
-					},
-				},
+				harper_ls = { autostart = true },
 
 				lua_ls = {
 					autostart = true,
@@ -261,23 +229,6 @@ return {
 				-- rustaceanvim (lazyvim.plugins.extras.lang.rust) manages it.
 				-- Setting it up via lspconfig too would attach a second
 				-- rust-analyzer client -> duplicate hints/definitions/diagnostics.
-
-				-- bacon_ls is disabled - rustaceanvim manages rust-analyzer
-				bacon_ls = { enabled = false },
-
-				clangd = {
-					autostart = true,
-					cmd = {
-						"clangd",
-						"xcode-build-server",
-						"--background-index",
-						"--clang-tidy",
-						"--header-insertion=iwyu",
-						"--completion-style=detailed",
-					},
-				},
-
-				zls = { autostart = true },
 
 				tinymist = {
 					autostart = true,
@@ -331,71 +282,6 @@ return {
 					end,
 				},
 
-				pyright = {
-					autostart = true,
-					single_file_support = true,
-					root_dir = function(...)
-						return require("lspconfig.util").root_pattern(
-							"pyproject.toml",
-							"setup.py",
-							"setup.cfg",
-							"requirements.txt",
-							".git"
-						)(...) or vim.fn.getcwd()
-					end,
-					settings = {
-						python = {
-							analysis = {
-								autoSearchPaths = true,
-								diagnosticMode = "workspace",
-								useLibraryCodeForTypes = true,
-								typeCheckingMode = "basic",
-								reportWildcardImportFromLibrary = "none",
-								reportMissingTypeStubs = "none",
-								reportMissingImports = "warning",
-								reportUnusedImport = "warning",
-								reportUntypedBaseClass = "none",
-								reportUnknownArgumentType = "none",
-								reportUnknownMemberType = "none",
-								reportUnknownVariableType = "none",
-								reportUnknownParameterType = "none",
-								reportUnknownLambdaType = "none",
-								reportCallIssue = "none",
-								reportAttributeAccessIssue = "none",
-								reportArgumentType = "none",
-								reportOperatorIssue = "none",
-								reportOptionalIterable = "none",
-								reportOptionalMemberAccess = "none",
-								reportPrivateUsage = "none",
-							},
-						},
-					},
-					on_new_config = function(config, root_dir)
-						config.settings = config.settings or {}
-						config.settings.python = config.settings.python or {}
-						local candidates = {
-							root_dir .. "/.venv/bin/python",
-							root_dir .. "/venv/bin/python",
-						}
-						for _, py in ipairs(candidates) do
-							if vim.uv.fs_stat(py) then
-								config.settings.python.pythonPath = py
-								config.settings.python.venvPath = root_dir
-								config.settings.python.venv = vim.fs.basename(vim.fs.dirname(py))
-								break
-							end
-						end
-						if not config.settings.python.pythonPath then
-							config.settings.python.pythonPath = vim.fn.exepath("python3") or "/usr/bin/python3"
-						end
-					end,
-					on_attach = function(_, bufnr)
-						vim.bo[bufnr].tabstop = 4
-						vim.bo[bufnr].shiftwidth = 4
-						vim.bo[bufnr].expandtab = true
-						vim.bo[bufnr].softtabstop = 4
-					end,
-				},
 			},
 
 			setup = {},
@@ -426,7 +312,7 @@ return {
 				automatic_installation = true,
 				-- rust_analyzer is handled by rustaceanvim, not lspconfig,
 				-- otherwise two rust-analyzer clients attach to every buffer.
-				automatic_enable = { exclude = { "rust_analyzer", "bacon_ls" } },
+				automatic_enable = { exclude = { "rust_analyzer" } },
 				handlers = {
 					function(server_name)
 						local server_opts = opts.servers[server_name] or {}
@@ -681,8 +567,6 @@ return {
 			linters_by_ft = {
 				swift = { "swiftlint" },
 				lua = { "luacheck" },
-				sh = { "shellcheck" },
-				python = { "ruff" },
 			},
 		},
 	},
@@ -692,7 +576,6 @@ return {
 		opts = {
 			formatters_by_ft = {
 				lua = { "stylua" },
-				sh = { "shfmt" },
 				python = { "ruff_format" },
 				go = { "gofumpt", "goimports" },
 				javascript = { "prettier" },
@@ -705,12 +588,7 @@ return {
 				yaml = { "prettier" },
 				markdown = { "prettier" },
 				rust = { "rustfmt" },
-				cpp = { "clang-format" },
-				c = { "clang-format" },
 				swift = { "swiftformat" },
-				kotlin = { "ktlint" },
-				toml = { "taplo" },
-				ruby = { "rubocop" },
 			},
 			format_on_save = {
 				timeout_ms = 2000,

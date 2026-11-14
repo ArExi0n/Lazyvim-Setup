@@ -4,6 +4,10 @@ return {
 		enabled = false,
 	},
 	{
+		"goolord/alpha-nvim",
+		enabled = false,
+	},
+	{
 		"nvimdev/dashboard-nvim",
 		enabled = false,
 	},
@@ -14,34 +18,34 @@ return {
 			options = {
 				theme = {
 					normal = {
-						a = { bg = "#101010", fg = "#b0b0b0", gui = "bold" },
-						b = { bg = "#101010", fg = "#b0b0b0" },
-						c = { bg = "#101010", fg = "#b0b0b0" },
+						a = { bg = "none", fg = "#b0b0b0", gui = "bold" },
+						b = { bg = "none", fg = "#b0b0b0" },
+						c = { bg = "none", fg = "#b0b0b0" },
 					},
 					insert = {
-						a = { bg = "#101010", fg = "#b0b0b0", gui = "bold" },
-						b = { bg = "#101010", fg = "#b0b0b0" },
-						c = { bg = "#101010", fg = "#b0b0b0" },
+						a = { bg = "none", fg = "#b0b0b0", gui = "bold" },
+						b = { bg = "none", fg = "#b0b0b0" },
+						c = { bg = "none", fg = "#b0b0b0" },
 					},
 					visual = {
-						a = { bg = "#101010", fg = "#b0b0b0", gui = "bold" },
-						b = { bg = "#101010", fg = "#b0b0b0" },
-						c = { bg = "#101010", fg = "#b0b0b0" },
+						a = { bg = "none", fg = "#b0b0b0", gui = "bold" },
+						b = { bg = "none", fg = "#b0b0b0" },
+						c = { bg = "none", fg = "#b0b0b0" },
 					},
 					replace = {
-						a = { bg = "#101010", fg = "#b0b0b0", gui = "bold" },
-						b = { bg = "#101010", fg = "#b0b0b0" },
-						c = { bg = "#101010", fg = "#b0b0b0" },
+						a = { bg = "none", fg = "#b0b0b0", gui = "bold" },
+						b = { bg = "none", fg = "#b0b0b0" },
+						c = { bg = "none", fg = "#b0b0b0" },
 					},
 					command = {
-						a = { bg = "#101010", fg = "#b0b0b0", gui = "bold" },
-						b = { bg = "#101010", fg = "#b0b0b0" },
-						c = { bg = "#101010", fg = "#b0b0b0" },
+						a = { bg = "none", fg = "#b0b0b0", gui = "bold" },
+						b = { bg = "none", fg = "#b0b0b0" },
+						c = { bg = "none", fg = "#b0b0b0" },
 					},
 					inactive = {
-						a = { bg = "#101010", fg = "#474747" },
-						b = { bg = "#101010", fg = "#474747" },
-						c = { bg = "#101010", fg = "#474747" },
+						a = { bg = "none", fg = "#474747" },
+						b = { bg = "none", fg = "#474747" },
+						c = { bg = "none", fg = "#474747" },
 					},
 				},
 			},

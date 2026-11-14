@@ -82,9 +82,31 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- Typst template (vault Extra/Template/typst.typ): new *.typ files are
--- prefilled, plus :TypstTemplate and literal `:r typst.typ` from any cwd.
+-- prefilled, plus :Minimalism and literal `:r minimalism` from any cwd.
 -- Registered here (startup) so it also applies to the file passed on the
 -- command line; setup is idempotent so VeryLazy/obsidian re-calls are safe.
 pcall(function()
 	require("config.obsidian").setup_typst_template()
 end)
+
+-- Re-assert transparency after startup settles: some themes re-apply their
+-- own backgrounds after the initial ColorScheme event (everforest's async
+-- highlight pass), and lazy-loaded plugins (blink.cmp's menu/doc, which
+-- link to Pmenu/NormalFloat) only resolve once everything is transparent.
+vim.api.nvim_create_autocmd("VimEnter", {
+	group = vim.api.nvim_create_augroup("transparent_reassert", { clear = true }),
+	callback = function()
+		vim.schedule(function()
+			pcall(require("config.transparent").apply)
+		end)
+	end,
+})
+vim.api.nvim_create_autocmd("User", {
+	pattern = "VeryLazy",
+	group = "transparent_reassert",
+	callback = function()
+		vim.schedule(function()
+			pcall(require("config.transparent").apply)
+		end)
+	end,
+})

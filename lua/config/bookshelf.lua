@@ -60,16 +60,6 @@ function M.load_db()
 end
 
 function M.save_db(db)
-	vim.fn.writefile(
-		vim.fn
-			.json_encode(db)
-			:gsub("},", "},\n")
-			:gsub("^%[", "[\n")
-			:gsub("%]$", "\n]")
-			:gsub("%[{%s*\n", "[{")
-			:gsub("}\n%]$", "}]"),
-		M.db_path()
-	)
 	-- cleaner write
 	local ok, encoded = pcall(vim.fn.json_encode, db)
 	if ok then

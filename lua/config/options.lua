@@ -1,4 +1,6 @@
-vim.opt.guicursor = ""
+-- Cursor shapes: stock Neovim default (block in normal, bar in insert),
+-- matching sylvan-nvim which never overrides guicursor.
+-- vim.opt.guicursor = "" was forcing block-everywhere; leave it unset.
 
 vim.opt.nu = true
 vim.opt.relativenumber = true
@@ -57,7 +59,7 @@ vim.opt.splitright = true
 vim.opt.splitkeep = "cursor"
 vim.opt.cursorline = false
 vim.opt.list = false
-vim.opt.mouse = "a"
+vim.opt.mouse = ""
 vim.opt.formatoptions:append({ "r" })
 
 vim.opt.clipboard:append("unnamedplus")

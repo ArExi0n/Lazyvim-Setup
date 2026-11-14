@@ -14,6 +14,9 @@ require("config.options")
 
 require("config.lazy")
 
+-- Sylvan-style start screen: homepage-only look, restores on first file.
+require("config.startscreen").setup()
+
 -- Load user keymaps after LazyVim's defaults (VeryLazy) so they win conflicts
 vim.api.nvim_create_autocmd("User", {
 	pattern = "VeryLazy",
@@ -43,7 +46,11 @@ require("config.theme").setup({
 vim.api.nvim_create_autocmd("UIEnter", {
 	once = true,
 	callback = function()
-		vim.opt.cursorline = true
+		-- Match sylvan-nvim: no cursorline/cursorcolumn highlight.
+		-- NOTE: mouse is forced here (not just options.lua) because
+		-- LazyVim's own options load after ours and reset mouse="a".
+		vim.opt.mouse = ""
+		vim.opt.cursorline = false
 		vim.opt.cursorlineopt = "number"
 		vim.opt.cursorcolumn = false
 		vim.opt.list = false

@@ -1,4 +1,5 @@
 local M = {}
+local vim = vim
 
 local function expand(path)
 	return vim.fn.expand(path)
@@ -125,7 +126,7 @@ local function open_with_system(path)
 	vim.fn.jobstart({ "xdg-open", path }, { detach = true })
 end
 
-	local function find_daily_template(workspaces)
+local function find_daily_template(workspaces)
 	for _, workspace in ipairs(workspaces) do
 		if type(workspace.path) == "string" then
 			local template = vim.fs.joinpath(expand(workspace.path), "Extra", "Template", "journal.md")
@@ -414,7 +415,9 @@ function M.opts()
 		},
 		follow_url_func = function(url)
 			local bookshelf = require("config.bookshelf")
-			if bookshelf.follow_func(url) then return end
+			if bookshelf.follow_func(url) then
+				return
+			end
 			open_with_system(url)
 		end,
 		follow_img_func = open_with_system,
@@ -483,16 +486,25 @@ function M.insert_typst_template()
 	end
 end
 
---- Wire up :TypstTemplate, BufNewFile *.typ and `:r typst.typ` expansion.
+--- Wire up :Minimalism, BufNewFile *.typ and `:r minimalism` expansion.
+--- The template file itself stays Extra/Template/typst.typ.
 function M.setup_typst_template()
 	if vim.g.salar_typst_template_setup then
 		return
 	end
 	vim.g.salar_typst_template_setup = true
 
-	vim.api.nvim_create_user_command("TypstTemplate", function()
+	local insert = function()
 		M.insert_typst_template()
-	end, { desc = "Insert Extra/Template/typst.typ" })
+	end
+
+	vim.api.nvim_create_user_command("Minimalism", insert, {
+		desc = "Insert Extra/Template/typst.typ (minimalism template)",
+	})
+	-- Kept as a deprecated alias so old muscle memory and scripts keep working.
+	vim.api.nvim_create_user_command("TypstTemplate", insert, {
+		desc = "Alias for :Minimalism",
+	})
 
 	-- New *.typ files start from the template (BufNewFile only, so existing files are untouched).
 	local group = vim.api.nvim_create_augroup("salar-typst-template", { clear = true })
@@ -507,32 +519,38 @@ function M.setup_typst_template()
 		end,
 	})
 
-	-- Make the literal `:r typst.typ` work from any cwd by rewriting it to the
-	-- vault template on <CR>. (cnoreabbrev can't be used: its lhs must be
-	-- keyword chars, so `typst.typ` with a dot is rejected with E474.)
+	-- Make the literal `:r minimalism` (and the original `:r typst.typ`) work
+	-- from any cwd by rewriting it to the vault template on <CR>.
+	-- (cnoreabbrev can't be used: its lhs must be keyword chars, so a name with
+	-- a dot is rejected with E474.)
+	local read_aliases = { "minimalism", "minimalism.typ", "typst.typ" }
 	vim.keymap.set("c", "<CR>", function()
 		if vim.fn.getcmdtype() == ":" then
 			local line = vim.fn.getcmdline()
-			-- Match `:r typst.typ` / `:read typst.typ` with optional range
-			-- (`0r`, `'<,'>r`, `%r`, ...). The `r`/`read` must not be part of
-			-- a longer word, but may follow a range char like `0`, `$`, `%`, `'`, `>`, `,`.
-			local is_read = line:match("^%s*r%s+typst%.typ%s*$")
-				or line:match("[^%a]r%s+typst%.typ%s*$")
-				or line:match("^%s*read%s+typst%.typ%s*$")
-				or line:match("[^%a]read%s+typst%.typ%s*$")
-			if is_read then
-				-- Respect a real ./typst.typ in cwd if one exists.
-				if vim.fn.filereadable("typst.typ") == 0 then
-					local template = M.typst_template_path()
-					if template then
-						local expanded = line:gsub("typst%.typ%s*$", vim.fn.fnameescape(template))
-						vim.fn.setcmdline(expanded)
+			for _, alias in ipairs(read_aliases) do
+				local pat = vim.pesc(alias)
+				-- Match `:r NAME` / `:read NAME` with optional range
+				-- (`0r`, `'<,'>r`, `%r`, ...). The `r`/`read` must not be part of
+				-- a longer word, but may follow a range char like `0`, `$`, `%`, `'`, `>`, `,`.
+				local is_read = line:match("^%s*r%s+" .. pat .. "%s*$")
+					or line:match("[^%a]r%s+" .. pat .. "%s*$")
+					or line:match("^%s*read%s+" .. pat .. "%s*$")
+					or line:match("[^%a]read%s+" .. pat .. "%s*$")
+				if is_read then
+					-- Respect a real ./NAME in cwd if one exists.
+					if vim.fn.filereadable(alias) == 0 then
+						local template = M.typst_template_path()
+						if template then
+							local expanded = line:gsub(pat .. "%s*$", vim.fn.fnameescape(template))
+							vim.fn.setcmdline(expanded)
+						end
 					end
+					break
 				end
 			end
 		end
 		return "<CR>"
-	end, { expr = true, desc = "Expand :r typst.typ to vault template" })
+	end, { expr = true, desc = "Expand :r minimalism to vault template" })
 end
 
 return M
